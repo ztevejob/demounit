@@ -3,212 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Monitoring Demo Unit - Digimap</title>
+    <title>Employee Profile, Submit & Kalender - Digimap</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js untuk Grafik -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans leading-normal tracking-normal">
+<body class="bg-slate-900 text-gray-100 font-sans p-4 sm:p-6">
 
-    <div class="container mx-auto max-w-6xl p-4 sm:p-6 space-y-6">
+    <div class="container mx-auto max-w-6xl space-y-6">
         
-        <!-- Header & Toggle Mode Admin -->
-        <header class="bg-white shadow-md rounded-xl p-6 border-t-4 border-emerald-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">📊 Dashboard Monitoring Demo Unit</h1>
-                <p class="text-sm text-gray-500 mt-1">Upload foto bukti pengecekan berkala khusus hari Jumat (Terhubung Google Sheets).</p>
+        <!-- Header Navigasi Menu -->
+        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-md">
+            <h1 class="font-bold text-emerald-400 tracking-wider text-base sm:text-lg">📊 Portal Monitoring Demo Unit Digimap</h1>
+            <div class="flex gap-2">
+                <button onclick="switchTab('submit')" id="tabSubmitBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Menu Submit</button>
+                <button onclick="switchTab('rekap')" id="tabRekapBtn" class="bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Menu Rekap</button>
             </div>
-            <div class="flex items-center gap-3">
-                <div id="currentDateBadge" class="bg-emerald-50 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-lg border border-emerald-200"></div>
-                <!-- Tombol Ganti Mode Admin -->
-                <button onclick="toggleAdminMode()" id="adminToggleBtn" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow">
-                    🔐 Masuk Mode Admin
-                </button>
-            </div>
-        </header>
+        </div>
 
-        <!-- Grid Utama: Form Input & Visualisasi -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- LOADING GAUGE BAR -->
+        <div id="loadingBar" class="hidden w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+            <div class="bg-emerald-500 h-full progress-animate w-3/4 animate-pulse"></div>
+        </div>
+
+        <!-- === VIEW 1: MENU SUBMIT & PROFILE === -->
+        <div id="viewSubmit" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Form Input Sederhana (Upload Foto & Catatan) -->
-            <div class="bg-white shadow-md rounded-xl p-6 lg:col-span-1">
-                <h2 class="text-lg font-semibold mb-4 text-emerald-700 border-b pb-2">📝 Form Kirim Laporan & Foto</h2>
-                
-                <form id="uploadForm" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Nama PIC</label>
-                        <input type="text" id="reporterName" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Nama Anda">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Pilih Store / Cabang</label>
-                        <select id="storeLocation" required class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
-                            <option value="">-- Pilih Store Anda --</option>
-                        </select>
-                    </div>
+            <!-- KOLOM KIRI: EMPLOYEE PROFILE -->
+            <div class="lg:col-span-2 bg-slate-800 shadow-lg rounded-2xl overflow-hidden border border-slate-700">
+                <div class="bg-purple-700 text-white px-6 py-4 flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    </svg>
+                    <h2 class="font-bold tracking-wider text-sm uppercase">Employee Profile</h2>
+                </div>
 
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Catatan / Kendala (Opsional)</label>
-                        <textarea id="notes" rows="2" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Tuliskan jika ada kendala, atau kosongkan jika aman."></textarea>
-                    </div>
-
-                    <!-- Input Upload Foto dengan Batasan 2MB -->
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Upload Bukti Foto Kondisi Unit</label>
-                        <input type="file" id="photoFile" accept="image/*" required class="w-full border rounded-lg p-2 text-xs bg-gray-50 border-gray-300">
-                        <p class="text-[11px] text-gray-500 mt-1">Format: JPG, PNG | <b>Maksimal ukuran file: 2MB</b></p>
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-lg transition text-sm shadow-md">
-                        Kirim Laporan & Upload Foto
-                    </button>
-                </form>
+                <div class="p-6 overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <tbody class="divide-y divide-slate-700/60">
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400 w-1/3">Employee Name</td>
+                                <td>
+                                    <select id="employeeSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                                        <option value="">-- Pilih Nama Karyawan --</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">Status Submit Hari Ini</td>
+                                <td id="statusSubmit">
+                                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Belum Submit</span>
+                                </td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">Bukti Screenshot</td>
+                                <td id="valScreenshot" class="text-slate-300">-</td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">Store</td>
+                                <td id="valStore" class="text-slate-300">-</td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">NIK</td>
+                                <td id="valNik" class="text-slate-300">-</td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">Work Experience</td>
+                                <td id="valExp" class="text-slate-300">-</td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">SEED Registered Email</td>
+                                <td id="valEmail" class="text-slate-300">-</td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">Positions</td>
+                                <td id="valPosition" class="text-slate-300">-</td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">RH</td>
+                                <td id="valRh" class="text-slate-300">-</td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">AM</td>
+                                <td id="valAm" class="text-slate-300">-</td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">Type Store</td>
+                                <td id="valTypeStore" class="text-slate-300">-</td>
+                            </tr>
+                            <tr class="h-12">
+                                <td class="font-semibold text-slate-400">Trainer HO</td>
+                                <td id="valTrainer" class="text-slate-300">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <!-- Kalender & Daftar Toko Melapor -->
-            <div class="lg:col-span-2 space-y-6">
-                
-                <!-- KALENDER / MONITORING JUMATAN TOKO -->
-                <div class="bg-white shadow-md rounded-xl p-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 border-b pb-2">
-                        <h2 class="text-lg font-semibold text-emerald-700">📅 Status Toko Melapor</h2>
-                        <input type="date" id="filterDate" onchange="renderDashboard()" class="border rounded px-2 py-1 text-xs">
-                    </div>
-                    
-                    <!-- Daftar Toko yang Melapor pada Tanggal Terpilih -->
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-xs font-bold uppercase text-gray-500">Daftar Toko Sudah Melapor:</h3>
-                            <span id="storeCountBadge" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">0 / 0 Toko</span>
-                        </div>
-                        <div id="reportedStoresList" class="space-y-2 max-h-48 overflow-y-auto text-sm">
-                            <p class="text-gray-400 text-xs">Memuat data dari Google Sheets...</p>
-                        </div>
+            <!-- KOLOM KANAN: MENU SUBMIT & INFORMASI RUTIN -->
+            <div class="space-y-6">
+                <!-- Card Menu Submit -->
+                <div class="bg-slate-800 shadow-lg rounded-2xl p-6 border border-slate-700">
+                    <div class="flex items-center gap-2 text-purple-400 font-bold mb-4 border-b border-slate-700 pb-3">
+                        <span class="text-lg">📥</span>
+                        <h3 class="text-sm uppercase tracking-wide">Menu Submit</h3>
                     </div>
 
-                    <!-- KHUSUS PANEL ADMIN (Tersembunyi jika bukan mode admin) -->
-                    <div id="adminPanel" class="hidden mt-6 pt-4 border-t border-dashed border-gray-300 bg-amber-50 p-4 rounded-xl space-y-3">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-xs font-bold uppercase text-amber-800">🔒 Panel Admin: Toko Belum Melapor</h3>
-                            <button onclick="broadcastWhatsApp()" class="bg-green-700 hover:bg-green-800 text-white text-[10px] px-2.5 py-1 rounded font-semibold">📢 Broadcast WA ke Semua</button>
+                    <form id="submitForm" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Pilih Tanggal:</label>
+                            <input type="date" id="submitDate" required class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
                         </div>
-                        <div id="unreportedStoresList" class="space-y-2 text-sm max-h-32 overflow-y-auto">
-                            <!-- Daftar toko lalai beserta tombol WA -->
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Upload Screenshot (Maks 2 MB):</label>
+                            <input type="file" id="photoFile" accept="image/*" required class="w-full bg-slate-900 border border-slate-700 text-slate-300 rounded-lg p-2 text-xs file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-purple-900 file:text-purple-200 hover:file:bg-purple-800">
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition text-sm shadow-md">
+                            Submit
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Informasi Rutin Setiap Jumat -->
+                <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-5 text-xs text-emerald-300 flex items-center gap-3 shadow-inner">
+                    <span class="text-2xl">📅</span>
+                    <div>
+                        <span class="font-bold block uppercase tracking-wider text-emerald-400 mb-0.5">Ketentuan Pelaporan:</span>
+                        Rutin dilakukan setiap hari Jumat. Pastikan data dan screenshot diunggah dengan benar.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- === VIEW 2: MENU REKAP & KALENDER AKTIVITAS === -->
+        <div id="viewRekap" class="hidden space-y-6">
+            
+            <!-- KALENDER AKTIVITAS SUBMIT (Sesuai Referensi Gambar) -->
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-5">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div class="flex items-center gap-2 text-emerald-400 font-bold uppercase text-sm tracking-wider">
+                        <span>📅</span> Kalender Aktivitas Submit
+                    </div>
+                    <div class="flex items-center gap-3 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700">
+                        <span id="calendarMonthLabel" class="text-xs font-bold text-white">Nov 2026</span>
+                        <div class="flex gap-1">
+                            <button onclick="changeMonth(-1)" class="text-slate-400 hover:text-white px-1.5 text-xs bg-slate-800 rounded">◀</button>
+                            <button onclick="changeMonth(1)" class="text-slate-400 hover:text-white px-1.5 text-xs bg-slate-800 rounded">▶</button>
                         </div>
                     </div>
                 </div>
 
+                <!-- Bar Status Karyawan & Indikator -->
+                <div class="bg-slate-900/80 border border-slate-700 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
+                    <div>
+                        <span class="text-slate-400 font-medium">Staff: </span>
+                        <span id="calendarStaffName" class="text-emerald-400 font-bold">(Pilih Karyawan di Menu Submit / Rekap)</span>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs font-semibold">
+                        <span class="flex items-center gap-1.5 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Submitted</span>
+                        <span class="flex items-center gap-1.5 text-rose-400"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Belum</span>
+                    </div>
+                </div>
+
+                <!-- Grid Kalender (Sen - Min) -->
+                <div class="bg-slate-900/60 border border-slate-700 rounded-xl overflow-hidden">
+                    <div class="grid grid-cols-7 text-center font-bold text-xs text-slate-400 bg-slate-900 py-3 border-b border-slate-700">
+                        <div>Sen</div><div>Sel</div><div>Rbu</div><div>Kam</div><div>Jum</div><div>Sab</div><div>Min</div>
+                    </div>
+                    <div id="calendarGrid" class="grid grid-cols-7 text-center text-xs divide-x divide-y divide-slate-800 min-h-[220px]">
+                        <!-- Render Otomatis via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABEL TABEL REKAP & TOMBOL LIHAT TOKO -->
+            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Daftar Rekapitulasi Submit Toko</h3>
+                    <button onclick="fetchAllData()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-lg transition">🔄 Refresh Data</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-700">
+                                <th class="p-3">Tanggal</th>
+                                <th class="p-3">Store / Cabang</th>
+                                <th class="p-3">Nama Karyawan</th>
+                                <th class="p-3">Catatan / NIK</th>
+                                <th class="p-3 text-center">Aksi Toko & Foto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rekapTableBody" class="divide-y divide-slate-700/50 text-slate-300">
+                            <tr><td colspan="5" class="p-6 text-center text-slate-500">Memuat data rekap...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
 
     </div>
 
+    <!-- MODAL DETAIL TOKO -->
+    <div id="storeModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 id="modalTitle" class="font-bold text-white text-sm">Detail Toko</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+            <div id="modalBody" class="space-y-3 text-xs text-slate-300">
+                <!-- Konten Detail -->
+            </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs font-semibold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Script Utama -->
     <script>
-        // URL Web App Google Apps Script Anda yang sudah di-deploy
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwqP4L7VVq3fU10UG84N2H7C3lfs5FKwKb2VoSlblJWBWMYUJqA09tTci_TlbUSEN1Z/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx_EcKfyTadkcEtPRlmMLgYqDp7fRbILfcFWj8wYHOQ_w8axhGkL5eXXGeBQ0BgVN9vZg/exec";
 
-        const MASTER_STORES = [
-            "Digimap Galaxy Mall Surabaya",
-            "Digimap Tunjungan Plaza Surabaya",
-            "Digimap Grand Indonesia Jakarta",
-            "Digimap Senayan City Jakarta",
-            "Digimap Pondok Indah Mall Jakarta",
-            "Digimap Paris Van Java Bandung",
-            "Digimap Beachwalk Bali"
-        ];
-
-        let isAdmin = false;
-        let globalReports = [];
+        let MASTER_KARYAWAN = [];
+        let GLOBAL_REPORTS = [];
+        let currentCalendarDate = new Date();
+        let selectedStaffName = "";
 
         document.addEventListener("DOMContentLoaded", () => {
-            const storeSelect = document.getElementById("storeLocation");
-            MASTER_STORES.forEach(store => {
-                let opt = document.createElement("option");
-                opt.value = store;
-                opt.textContent = store;
-                storeSelect.appendChild(opt);
-            });
-
             const todayStr = new Date().toISOString().split('T')[0];
-            document.getElementById("filterDate").value = todayStr;
+            document.getElementById("submitDate").value = todayStr;
 
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById("currentDateBadge").innerText = "📅 " + new Date().toLocaleDateString('id-ID', options);
-
-            fetchDataAndRender();
+            fetchAllData();
         });
 
-        // Ambil Data dari Google Sheets via doGet()
-        function fetchDataAndRender() {
-            fetch(WEB_APP_URL)
-            .then(res => res.json())
-            .then(data => {
-                globalReports = data;
-                renderDashboard();
-            })
-            .catch(err => {
-                console.error("Gagal mengambil data:", err);
-                document.getElementById("reportedStoresList").innerHTML = `<p class="text-red-500 text-xs">Gagal terhubung ke Google Sheets.</p>`;
-            });
+        // Toggle Loading Bar
+        function showLoading(show) {
+            const bar = document.getElementById("loadingBar");
+            if (show) bar.classList.remove("hidden");
+            else bar.classList.add("hidden");
         }
 
-        // Toggle Mode Admin
-        function toggleAdminMode() {
-            isAdmin = !isAdmin;
-            const btn = document.getElementById("adminToggleBtn");
-            const panel = document.getElementById("adminPanel");
+        // Switch Tabs (Submit vs Rekap)
+        function switchTab(tab) {
+            const viewSubmit = document.getElementById("viewSubmit");
+            const viewRekap = document.getElementById("viewRekap");
+            const btnSubmit = document.getElementById("tabSubmitBtn");
+            const btnRekap = document.getElementById("tabRekapBtn");
 
-            if(isAdmin) {
-                let pin = prompt("Masukkan PIN Admin:");
-                if(pin === "1234") {
-                    btn.innerText = "🔓 Keluar Mode Admin";
-                    btn.classList.replace("bg-gray-800", "bg-amber-600");
-                    panel.classList.remove("hidden");
-                    alert("Berhasil masuk ke Mode Admin!");
-                } else {
-                    isAdmin = false;
-                    alert("PIN Salah!");
-                }
+            if (tab === 'submit') {
+                viewSubmit.classList.remove("hidden");
+                viewRekap.classList.add("hidden");
+                btnSubmit.className = "bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
+                btnRekap.className = "bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
             } else {
-                btn.innerText = "🔐 Masuk Mode Admin";
-                btn.classList.replace("bg-amber-600", "bg-gray-800");
-                panel.classList.add("hidden");
+                viewSubmit.classList.add("hidden");
+                viewRekap.classList.remove("hidden");
+                btnRekap.className = "bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
+                btnSubmit.className = "bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
+                renderCalendar();
+                renderRekapTable();
             }
-            renderDashboard();
         }
 
-        // Form Submit Upload Foto dengan Validasi Maksimal 2MB
-        document.getElementById("uploadForm").addEventListener("submit", function(e) {
+        // Fetch Data Master Karyawan & Laporan Submit dari Google Sheets
+        function fetchAllData() {
+            showLoading(true);
+            fetch(WEB_APP_URL)
+                .then(res => res.json())
+                .then(data => {
+                    showLoading(false);
+                    // Asumsi struktur doGet mengembalikan objek/array gabungan atau array laporan.
+                    // Jika data master terpisah, kita inisialisasi master karyawan dari data atau fallback.
+                    GLOBAL_REPORTS = Array.isArray(data) ? data : (data.reports || []);
+                    MASTER_KARYAWAN = data.employees || [
+                        { nama: "Ahmad Fathoni", store: "Digimap Tunjungan Plaza", nik: "123456", exp: "2 Tahun", email: "ahmad.fathoni@digimap.com", position: "Staff", rh: "Budi", am: "Riyan", typeStore: "Flagship", trainer: "Novi Riyanto" },
+                        { nama: "Siska Melina", store: "Digimap Galaxy Mall", nik: "654321", exp: "1 Tahun", email: "siska.melina@digimap.com", position: "Kasir", rh: "Ani", am: "Suhartono", typeStore: "Standard", trainer: "Frandy" }
+                    ];
+
+                    populateEmployeeDropdown();
+                    renderRekapTable();
+                    renderCalendar();
+                })
+                .catch(err => {
+                    showLoading(false);
+                    console.error("Gagal memuat data:", err);
+                    // Fallback data demo jika gagal fetch agar UI tetap interaktif
+                    MASTER_KARYAWAN = [
+                        { nama: "Ahmad Fathoni", store: "Digimap Tunjungan Plaza", nik: "123456", exp: "2 Tahun", email: "ahmad.fathoni@digimap.com", position: "Staff", rh: "Budi", am: "Riyan", typeStore: "Flagship", trainer: "Novi Riyanto" },
+                        { nama: "Siska Melina", store: "Digimap Galaxy Mall", nik: "654321", exp: "1 Tahun", email: "siska.melina@digimap.com", position: "Kasir", rh: "Ani", am: "Suhartono", typeStore: "Standard", trainer: "Frandy" }
+                    ];
+                    populateEmployeeDropdown();
+                });
+        }
+
+        // Populate Dropdown Employee Name dari Master Karyawan
+        function populateEmployeeDropdown() {
+            const select = document.getElementById("employeeSelect");
+            select.innerHTML = '<option value="">-- Pilih Nama Karyawan --</option>';
+            MASTER_KARYAWAN.forEach(emp => {
+                let opt = document.createElement("option");
+                opt.value = emp.nama;
+                opt.textContent = emp.nama + (emp.store ? ` (${emp.store})` : '');
+                select.appendChild(opt);
+            });
+
+            select.onchange = function() {
+                const selectedName = this.value;
+                selectedStaffName = selectedName;
+                document.getElementById("calendarStaffName.innerText") = selectedName || "(Pilih Nama)";
+                
+                const found = MASTER_KARYAWAN.find(e => e.nama === selectedName);
+                if (found) {
+                    document.getElementById("valStore").innerText = found.store || "-";
+                    document.getElementById("valNik").innerText = found.nik || "-";
+                    document.getElementById("valExp").innerText = found.exp || "-";
+                    document.getElementById("valEmail").innerText = found.email || "-";
+                    document.getElementById("valPosition").innerText = found.position || "-";
+                    document.getElementById("valRh").innerText = found.rh || "-";
+                    document.getElementById("valAm").innerText = found.am || "-";
+                    document.getElementById("valTypeStore").innerText = found.typeStore || "-";
+                    document.getElementById("valTrainer").innerText = found.trainer || "-";
+                } else {
+                    document.getElementById("valStore").innerText = "-";
+                    document.getElementById("valNik").innerText = "-";
+                    document.getElementById("valExp").innerText = "-";
+                    document.getElementById("valEmail").innerText = "-";
+                    document.getElementById("valPosition").innerText = "-";
+                    document.getElementById("valRh").innerText = "-";
+                    document.getElementById("valAm").innerText = "-";
+                    document.getElementById("valTypeStore").innerText = "-";
+                    document.getElementById("valTrainer").innerText = "-";
+                }
+                renderCalendar();
+            };
+        }
+
+        // Form Submit Handler
+        document.getElementById("submitForm").addEventListener("submit", function(e) {
             e.preventDefault();
-            
-            const fileInput = document.getElementById("photoFile");
-            const file = fileInput.files[0];
-            
-            // Batasan ukuran file maksimal 2MB
-            const MAX_SIZE = 2 * 1024 * 1024;
-            if (file && file.size > MAX_SIZE) {
-                alert("Ukuran foto terlalu besar! Maksimal ukuran file adalah 2MB. Silakan pilih foto lain.");
+            const namaKaryawan = document.getElementById("employeeSelect").value;
+            if(!namaKaryawan) {
+                alert("Silakan pilih Nama Karyawan terlebih dahulu!");
                 return;
             }
 
-            const btn = document.getElementById("submitBtn");
-            btn.innerText = "Mengunggah laporan & foto...";
-            btn.disabled = true;
+            const fileInput = document.getElementById("photoFile");
+            const file = fileInput.files[0];
+            const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+            if (file && file.size > MAX_SIZE) {
+                alert("Ukuran screenshot terlalu besar! Maksimal 2 MB.");
+                return;
+            }
 
-            const storeLocation = document.getElementById("storeLocation").value;
-            const dateStr = document.getElementById("filterDate").value;
+            showLoading(true);
+            const btn = document.getElementById("submitBtn");
+            btn.innerText = "Mengirim...";
+            btn.disabled = true;
 
             const reader = new FileReader();
             reader.onload = function(event) {
                 const payload = {
-                    date: dateStr,
-                    reporterName: document.getElementById("reporterName").value,
-                    storeLocation: storeLocation,
-                    notes: document.getElementById("notes").value,
+                    date: document.getElementById("submitDate").value,
+                    reporterName: namaKaryawan,
+                    storeLocation: document.getElementById("valStore").innerText,
+                    notes: "NIK: " + document.getElementById("valNik").innerText,
                     fileData: event.target.result,
-                    fileName: file.name || "foto.jpg",
+                    fileName: file.name || "screenshot.jpg",
                     mimeType: file.type || "image/jpeg"
                 };
 
@@ -218,98 +380,167 @@
                 })
                 .then(res => res.json())
                 .then(response => {
+                    showLoading(false);
                     if(response.status === "success") {
-                        alert("Laporan dan foto berhasil dikirim ke Google Sheets!");
-                        document.getElementById("uploadForm").reset();
-                        document.getElementById("filterDate").value = dateStr;
-                        fetchDataAndRender();
+                        alert("Data dan screenshot berhasil disubmit!");
+                        document.getElementById("submitForm").reset();
+                        document.getElementById("submitDate").value = new Date().toISOString().split('T')[0];
+                        document.getElementById("statusSubmit").innerHTML = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">✅ Sudah Submit</span>`;
+                        document.getElementById("valScreenshot").innerHTML = `<a href="${response.fileUrl || '#'}" target="_blank" class="text-blue-400 underline">Lihat Foto</a>`;
+                        fetchAllData();
                     } else {
                         alert("Gagal dari Server: " + (response.message || "Unknown error"));
                     }
-                    btn.innerText = "Kirim Laporan & Upload Foto";
+                    btn.innerText = "Submit";
                     btn.disabled = false;
                 })
                 .catch(err => {
+                    showLoading(false);
                     alert("Gagal terhubung ke server.");
                     console.error(err);
-                    btn.innerText = "Kirim Laporan & Upload Foto";
+                    btn.innerText = "Submit";
                     btn.disabled = false;
                 });
             };
             reader.readAsDataURL(file);
         });
 
-        // Render Dashboard & Status Toko
-        function renderDashboard() {
-            const selectedDate = document.getElementById("filterDate").value;
-            const reportsOnDate = globalReports.filter(item => item.date === selectedDate);
+        // RENDER KALENDER AKTIVITAS SUBMIT
+        function renderCalendar() {
+            const grid = document.getElementById("calendarGrid");
+            const monthLabel = document.getElementById("calendarMonthLabel");
+            const staffNameDisplay = document.getElementById("calendarStaffName");
 
-            const reportedListEl = document.getElementById("reportedStoresList");
-            document.getElementById("storeCountBadge").innerText = `${reportsOnDate.length} / ${MASTER_STORES.length} Toko Melapor`;
+            staffNameDisplay.innerText = selectedStaffName ? selectedStaffName : "(Pilih Nama di Menu Submit / Rekap)";
 
-            if(reportsOnDate.length === 0) {
-                reportedListEl.innerHTML = `<p class="text-gray-400 text-xs">Belum ada toko yang melapor pada tanggal ${selectedDate}.</p>`;
-            } else {
-                reportedListEl.innerHTML = reportsOnDate.map(rep => `
-                    <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded border text-xs">
-                        <div>
-                            <span class="font-bold text-gray-800">🏪 ${rep.storeLocation}</span> 
-                            <span class="text-gray-500">(PIC: ${rep.reporterName})</span>
-                            <div class="text-gray-600 mt-0.5">Catatan: ${rep.notes || '-'}</div>
-                        </div>
-                        <div class="flex gap-2">
-                            ${rep.fileUrl ? `<a href="${rep.fileUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded font-medium shadow">🖼️ Lihat Foto</a>` : ''}
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+            monthLabel.innerText = `${monthNames[month]} ${year}`;
+
+            // Hitung hari awal dan jumlah hari
+            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; // Mulai Senin (0=Senin)
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            // Filter laporan untuk staff terpilih
+            const staffReports = GLOBAL_REPORTS.filter(r => !selectedStaffName || r.reporterName === selectedStaffName);
+            const submittedDates = staffReports.map(r => r.date);
+
+            let html = "";
+            // Padding hari kosong sebelum tanggal 1
+            for (let i = 0; i < firstDayIndex; i++) {
+                html += `<div class="p-3 bg-slate-900/30 text-slate-700"></div>`;
+            }
+
+            for (let day = 1; day <= totalDays; day++) {
+                const formattedMonth = String(month + 1).padStart(2, '0');
+                const formattedDay = String(day).padStart(2, '0');
+                const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
+
+                const isSubmitted = submittedDates.includes(dateStr);
+                const dotColor = isSubmitted ? "bg-emerald-500 shadow-emerald-500/50 shadow-sm" : "bg-rose-500/60";
+                
+                // Cari jumlah toko yang submit pada tanggal ini
+                const reportsOnThisDay = GLOBAL_REPORTS.filter(r => r.date === dateStr);
+                const storeCount = [...new Set(reportsOnThisDay.map(r => r.storeLocation))].length;
+
+                html += `
+                    <div class="p-2.5 bg-slate-900 flex flex-col justify-between items-center h-20 border border-slate-800/80 hover:bg-slate-800/50 transition cursor-pointer" onclick="openDayDetail('${dateStr}')">
+                        <span class="font-bold text-slate-300 text-xs">${day}</span>
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="w-2.5 h-2.5 rounded-full ${dotColor}"></span>
+                            ${storeCount > 0 ? `<span class="text-[9px] bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800">${storeCount} Toko</span>` : `<span class="text-[9px] text-slate-600">-</span>`}
                         </div>
                     </div>
-                `).join("");
+                `;
             }
-
-            if(isAdmin) {
-                const reportedStoreNames = reportsOnDate.map(r => r.storeLocation);
-                const unreportedStores = MASTER_STORES.filter(store => !reportedStoreNames.includes(store));
-                window.unreportedCache = unreportedStores;
-                const adminPanelEl = document.getElementById("unreportedStoresList");
-
-                if(unreportedStores.length === 0) {
-                    adminPanelEl.innerHTML = `<p class="text-emerald-700 text-xs font-semibold">Mantap! Semua toko sudah mengirim laporan pada tanggal ini.</p>`;
-                } else {
-                    adminPanelEl.innerHTML = unreportedStores.map(store => `
-                        <div class="flex justify-between items-center bg-white p-2.5 rounded border border-amber-200 text-xs">
-                            <span class="font-bold text-gray-700">❌ ${store}</span>
-                            <button onclick="sendWhatsAppReminder('${store}', '${selectedDate}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-semibold flex items-center gap-1">
-                                💬 Ingatkan WA
-                            </button>
-                        </div>
-                    `).join("");
-                }
-            }
+            grid.innerHTML = html;
         }
 
-        function sendWhatsAppReminder(storeName, date) {
-            let message = `🚨 *REMINDER DEMO UNIT JUMAT* 🚨\n\n` +
-                          `Halo PIC *${storeName}*,\n` +
-                          `Diingatkan untuk segera mengirimkan foto bukti pengecekan demo unit mingguan untuk tanggal *${date}* pada sistem.\n\nTerima kasih! 🙏`;
-            let waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-            window.open(waUrl, '_blank');
+        function changeMonth(direction) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+            renderCalendar();
         }
 
-        function broadcastWhatsApp() {
-            let unreported = window.unreportedCache || [];
-            let date = document.getElementById("filterDate").value;
-
-            if(unreported.length === 0) {
-                alert("Tidak ada toko yang belum melapor pada tanggal ini!");
+        // RENDER TABEL REKAP & TOMBOL LIHAT TOKO
+        function renderRekapTable() {
+            const tbody = document.getElementById("rekapTableBody");
+            if (!GLOBAL_REPORTS || GLOBAL_REPORTS.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Belum ada data rekapitulasi submit.</td></tr>`;
                 return;
             }
 
-            let storeListText = unreported.map(s => `- ${s}`).join("\n");
-            let message = `🚨 *REMINDER MASSAL LAPORAN FOTO JUMAT* 🚨\n` +
-                          `Tanggal: *${date}*\n\n` +
-                          `Kepada rekan-rekan PIC store berikut yang *belum mengirimkan foto laporan*: \n${storeListText}\n\n` +
-                          `Mohon segera di-upload hari ini. Terima kasih! 🙏✨`;
+            tbody.innerHTML = GLOBAL_REPORTS.map(rep => {
+                const store = rep.storeLocation || "-";
+                const date = rep.date || "-";
+                const name = rep.reporterName || "-";
+                const notes = rep.notes || "-";
+                return `
+                    <tr class="hover:bg-slate-700/30 transition">
+                        <td class="p-3 text-slate-400">${date}</td>
+                        <td class="p-3 font-semibold text-white">${store}</td>
+                        <td class="p-3 text-slate-300">${name}</td>
+                        <td class="p-3 text-slate-400">${notes}</td>
+                        <td class="p-3 text-center flex items-center justify-center gap-2">
+                            <button onclick="openStoreDetail('${store}', '${date}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded text-[11px] font-medium transition shadow">🏪 Lihat Toko</button>
+                            ${rep.fileUrl ? `<a href="${rep.fileUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded text-[11px] font-medium transition shadow">🖼️ Foto</a>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        // MODAL LIHAT TOKO / DETAIL HARI
+        function openDayDetail(dateStr) {
+            const reports = GLOBAL_REPORTS.filter(r => r.date === dateStr);
+            const stores = [...new Set(reports.map(r => r.storeLocation))];
             
-            let waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-            window.open(waUrl, '_blank');
+            document.getElementById("modalTitle").innerText = `📅 Aktivitas Submit Tanggal: ${dateStr}`;
+            let bodyHtml = `<p class="text-slate-400">Total Toko Submit: <b class="text-emerald-400">${stores.length} Toko</b></p>`;
+            
+            if (stores.length === 0) {
+                bodyHtml += `<p class="text-rose-400 mt-2">Tidak ada aktivitas submit pada tanggal ini.</p>`;
+            } else {
+                bodyHtml += `<div class="space-y-2 mt-3 max-h-60 overflow-y-auto">`;
+                reports.forEach(r => {
+                    bodyHtml += `
+                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
+                            <div>
+                                <b class="text-white">🏪 ${r.storeLocation}</b><br>
+                                <span class="text-slate-400">PIC: ${r.reporterName} (${r.notes})</span>
+                            </div>
+                            ${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">Lihat Foto</a>` : ''}
+                        </div>
+                    `;
+                });
+                bodyHtml += `</div>`;
+            }
+            document.getElementById("modalBody").innerHTML = bodyHtml;
+            document.getElementById("storeModal").classList.remove("hidden");
+        }
+
+        function openStoreDetail(storeName, dateStr) {
+            const reports = GLOBAL_REPORTS.filter(r => r.storeLocation === storeName && (!dateStr || r.date === dateStr));
+            document.getElementById("modalTitle").innerText = `🏪 Detail Store: ${storeName}`;
+            let bodyHtml = `<p class="text-slate-400">Riwayat Submit:</p><div class="space-y-2 mt-2 max-h-60 overflow-y-auto">`;
+            
+            reports.forEach(r => {
+                bodyHtml += `
+                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 space-y-1 text-xs">
+                        <div><b>Tanggal:</b> ${r.date}</div>
+                        <div><b>PIC:</b> ${r.reporterName}</div>
+                        <div><b>Catatan:</b> ${r.notes}</div>
+                        ${r.fileUrl ? `<div><a href="${r.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">🖼️ Buka Bukti Screenshot Foto</a></div>` : ''}
+                    </div>
+                `;
+            });
+            bodyHtml += `</div>`;
+            document.getElementById("modalBody").innerHTML = bodyHtml;
+            document.getElementById("storeModal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("storeModal").classList.add("hidden");
         }
     </script>
 </body>
