@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring Demo Unit - Digimap</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js untuk Grafik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans leading-normal tracking-normal">
+
+    <div class="container mx-auto max-w-6xl p-4 sm:p-6 space-y-6">
+        
+        <!-- Header & Toggle Mode Admin -->
+        <header class="bg-white shadow-md rounded-xl p-6 border-t-4 border-emerald-600 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">📊 Dashboard Monitoring Demo Unit</h1>
+                <p class="text-sm text-gray-500 mt-1">Rekapitulasi berkala dan pelaporan khusus hari Jumat (Terhubung Google Sheets).</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div id="currentDateBadge" class="bg-emerald-50 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-lg border border-emerald-200"></div>
+                <!-- Tombol Ganti Mode Admin -->
+                <button onclick="toggleAdminMode()" id="adminToggleBtn" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow">
+                    🔐 Masuk Mode Admin
+                </button>
+            </div>
+        </header>
+
+        <!-- 1. SUMMARY CARDS -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
+                <div class="text-xs text-gray-500 font-bold uppercase">Total Toko Melapor</div>
+                <div id="statTotalStore" class="text-2xl font-bold text-gray-800 mt-1">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500">
+                <div class="text-xs text-gray-500 font-bold uppercase">Total Unit Offline</div>
+                <div id="statOffline" class="text-2xl font-bold text-gray-800 mt-1">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-orange-500">
+                <div class="text-xs text-gray-500 font-bold uppercase">Outdated Content</div>
+                <div id="statOutdated" class="text-2xl font-bold text-gray-800 mt-1">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-rose-500">
+                <div class="text-xs text-gray-500 font-bold uppercase">Unlocked / Masalah</div>
+                <div id="statUnlocked" class="text-2xl font-bold text-gray-800 mt-1">0</div>
+            </div>
+        </div>
+
+        <!-- Grid Utama: Form Input & Visualisasi -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Form Input Matrix & Upload Foto -->
+            <div class="bg-white shadow-md rounded-xl p-6 lg:col-span-1">
+                <h2 class="text-lg font-semibold mb-4 text-emerald-700 border-b pb-2">📝 Input Laporan & Foto</h2>
+                
+                <form id="matrixForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Nama PIC</label>
+                        <input type="text" id="reporterName" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Nama Anda">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Pilih Store / Cabang</label>
+                        <select id="storeLocation" required class="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                            <option value="">-- Pilih Store Anda --</option>
+                        </select>
+                    </div>
+
+                    <!-- Input Cepat Matriks -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 uppercase">
+                                    <th class="p-2 border">Unit</th>
+                                    <th class="p-2 border text-center">Offline</th>
+                                    <th class="p-2 border text-center">Outdated</th>
+                                    <th class="p-2 border text-center">Unlocked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="p-2 border font-semibold">iPhone</td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="iPhone" data-status="Offline" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="iPhone" data-status="Outdated Content" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="iPhone" data-status="Unlocked" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border font-semibold">iPad</td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="iPad" data-status="Offline" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="iPad" data-status="Outdated Content" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="iPad" data-status="Unlocked" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border font-semibold">Watch</td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="Apple Watch" data-status="Offline" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="Apple Watch" data-status="Outdated Content" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="Apple Watch" data-status="Unlocked" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border font-semibold">Mac</td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="Mac" data-status="Offline" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="Mac" data-status="Outdated Content" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                    <td class="p-1 border text-center"><input type="number" min="0" value="0" data-device="Mac" data-status="Unlocked" class="matrix-input w-12 text-center border rounded p-1"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Input Upload Foto -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1">Upload Bukti Foto</label>
+                        <input type="file" id="photoFile" accept="image/*" required class="w-full border rounded-lg p-2 text-xs bg-gray-50">
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 rounded-lg transition text-sm shadow-md">
+                        Kirim Laporan & Upload Foto
+                    </button>
+                </form>
+            </div>
+
+            <!-- Grafik & Kalender Kehadiran Toko (2 Kolom) -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <!-- Grafik Chart.js -->
+                <div class="bg-white shadow-md rounded-xl p-6">
+                    <h2 class="text-lg font-semibold text-emerald-700 mb-4">📈 Grafik Akumulasi Kendala Perangkat</h2>
+                    <div class="relative h-56 w-full">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- KALENDER / MONITORING JUMATAN TOKO -->
+                <div class="bg-white shadow-md rounded-xl p-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 border-b pb-2">
+                        <h2 class="text-lg font-semibold text-emerald-700">📅 Kalender Rekap & Status Toko</h2>
+                        <input type="date" id="filterDate" onchange="renderDashboard()" class="border rounded px-2 py-1 text-xs">
+                    </div>
+                    
+                    <!-- Daftar Toko yang Melapor pada Tanggal Terpilih -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold uppercase text-gray-500">Daftar Toko Sudah Melapor:</h3>
+                            <span id="storeCountBadge" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">0 / 0 Toko</span>
+                        </div>
+                        <div id="reportedStoresList" class="space-y-2 max-h-48 overflow-y-auto text-sm">
+                            <p class="text-gray-400 text-xs">Memuat data dari Google Sheets...</p>
+                        </div>
+                    </div>
+
+                    <!-- KHUSUS PANEL ADMIN (Tersembunyi jika bukan mode admin) -->
+                    <div id="adminPanel" class="hidden mt-6 pt-4 border-t border-dashed border-gray-300 bg-amber-50 p-4 rounded-xl space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold uppercase text-amber-800">🔒 Panel Admin: Toko Belum Melapor</h3>
+                            <button onclick="broadcastWhatsApp()" class="bg-green-700 hover:bg-green-800 text-white text-[10px] px-2.5 py-1 rounded font-semibold">📢 Broadcast WA ke Semua</button>
+                        </div>
+                        <div id="unreportedStoresList" class="space-y-2 text-sm max-h-32 overflow-y-auto">
+                            <!-- Daftar toko lalai beserta tombol WA -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Script Utama -->
+    <script>
+        // GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
+        const WEB_APP_URL = "PASTE_URL_WEB_APP_ANDA_DISINI";
+
+        const MASTER_STORES = [
+            "Digimap Galaxy Mall Surabaya",
+            "Digimap Tunjungan Plaza Surabaya",
+            "Digimap Grand Indonesia Jakarta",
+            "Digimap Senayan City Jakarta",
+            "Digimap Pondok Indah Mall Jakarta",
+            "Digimap Paris Van Java Bandung",
+            "Digimap Beachwalk Bali"
+        ];
+
+        let myChart = null;
+        let isAdmin = false;
+        let globalReports = [];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const storeSelect = document.getElementById("storeLocation");
+            MASTER_STORES.forEach(store => {
+                let opt = document.createElement("option");
+                opt.value = store;
+                opt.textContent = store;
+                storeSelect.appendChild(opt);
+            });
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById("filterDate").value = todayStr;
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById("currentDateBadge").innerText = "📅 " + new Date().toLocaleDateString('id-ID', options);
+
+            fetchDataAndRender();
+        });
+
+        // Ambil Data dari Google Sheets via doGet()
+        function fetchDataAndRender() {
+            if(WEB_APP_URL.includes("PASTE_URL")) {
+                document.getElementById("reportedStoresList").innerHTML = `<p class="text-red-500 text-xs">Harap masukkan URL Web App Google Apps Script pada variabel WEB_APP_URL.</p>`;
+                return;
+            }
+
+            fetch(WEB_APP_URL)
+            .then(res => res.json())
+            .then(data => {
+                globalReports = data;
+                renderDashboard();
+            })
+            .catch(err => {
+                console.error("Gagal mengambil data:", err);
+                document.getElementById("reportedStoresList").innerHTML = `<p class="text-red-500 text-xs">Gagal terhubung ke Google Sheets.</p>`;
+            });
+        }
+
+        // Toggle Mode Admin
+        function toggleAdminMode() {
+            isAdmin = !isAdmin;
+            const btn = document.getElementById("adminToggleBtn");
+            const panel = document.getElementById("adminPanel");
+
+            if(isAdmin) {
+                let pin = prompt("Masukkan PIN Admin:");
+                if(pin === "1234") {
+                    btn.innerText = "🔓 Keluar Mode Admin";
+                    btn.classList.replace("bg-gray-800", "bg-amber-600");
+                    panel.classList.remove("hidden");
+                    alert("Berhasil masuk ke Mode Admin!");
+                } else {
+                    isAdmin = false;
+                    alert("PIN Salah!");
+                }
+            } else {
+                btn.innerText = "🔐 Masuk Mode Admin";
+                btn.classList.replace("bg-amber-600", "bg-gray-800");
+                panel.classList.add("hidden");
+            }
+            renderDashboard();
+        }
+
+        // Form Submit dengan Upload Foto ke Google Sheets/Drive
+        document.getElementById("matrixForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const btn = document.getElementById("submitBtn");
+            btn.innerText = "Mengunggah laporan & foto...";
+            btn.disabled = true;
+
+            const fileInput = document.getElementById("photoFile");
+            const file = fileInput.files[0];
+            const storeLocation = document.getElementById("storeLocation").value;
+            const dateStr = document.getElementById("filterDate").value;
+
+            let summaryData = [];
+            document.querySelectorAll(".matrix-input").forEach(input => {
+                const val = parseInt(input.value) || 0;
+                if(val > 0) {
+                    summaryData.push({
+                        device: input.getAttribute("data-device"),
+                        status: input.getAttribute("data-status"),
+                        count: val
+                    });
+                }
+            });
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const payload = {
+                    id: Date.now(),
+                    date: dateStr,
+                    reporterName: document.getElementById("reporterName").value,
+                    storeLocation: storeLocation,
+                    details: summaryData,
+                    fileData: event.target.result,
+                    fileName: file.name,
+                    mimeType: file.type
+                };
+
+                fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(response => {
+                    alert("Laporan dan foto berhasil disimpan ke Google Sheets!");
+                    document.getElementById("matrixForm").reset();
+                    document.getElementById("filterDate").value = dateStr;
+                    btn.innerText = "Kirim Laporan & Upload Foto";
+                    btn.disabled = false;
+                    fetchDataAndRender();
+                })
+                .catch(err => {
+                    alert("Gagal mengunggah data!");
+                    console.error(err);
+                    btn.innerText = "Kirim Laporan & Upload Foto";
+                    btn.disabled = false;
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Render Dashboard, Statistik, Kalender, & Admin Tools
+        function renderDashboard() {
+            const selectedDate = document.getElementById("filterDate").value;
+            const reportsOnDate = globalReports.filter(item => item.date === selectedDate);
+
+            // 1. Update Summary Cards Keseluruhan
+            let totalStoresReported = [...new Set(globalReports.map(h => h.storeLocation))].length;
+            let totalOffline = 0, totalOutdated = 0, totalUnlocked = 0;
+
+            globalReports.forEach(h => {
+                let details = typeof h.details === 'string' ? JSON.parse(h.details) : h.details;
+                details.forEach(d => {
+                    if(d.status === "Offline") totalOffline += d.count;
+                    if(d.status === "Outdated Content") totalOutdated += d.count;
+                    if(d.status === "Unlocked") totalUnlocked += d.count;
+                });
+            });
+
+            document.getElementById("statTotalStore").innerText = totalStoresReported;
+            document.getElementById("statOffline").innerText = totalOffline;
+            document.getElementById("statOutdated").innerText = totalOutdated;
+            document.getElementById("statUnlocked").innerText = totalUnlocked;
+
+            // 2. Render List Toko yang Sudah Melapor & Tombol Lihat Foto
+            const reportedListEl = document.getElementById("reportedStoresList");
+            document.getElementById("storeCountBadge").innerText = `${reportsOnDate.length} / ${MASTER_STORES.length} Toko Melapor`;
+
+            if(reportsOnDate.length === 0) {
+                reportedListEl.innerHTML = `<p class="text-gray-400 text-xs">Belum ada toko yang melapor pada tanggal ${selectedDate}.</p>`;
+            } else {
+                reportedListEl.innerHTML = reportsOnDate.map(rep => {
+                    return `
+                        <div class="flex justify-between items-center bg-gray-50 p-2.5 rounded border text-xs">
+                            <div>
+                                <span class="font-bold text-gray-800">🏪 ${rep.storeLocation}</span> 
+                                <span class="text-gray-500">(PIC: ${rep.reporterName})</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick='viewDetail(${JSON.stringify(rep)})' class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded font-medium">
+                                    🔍 Detail
+                                </button>
+                                ${rep.fileUrl ? `<a href="${rep.fileUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded font-medium">🖼️ Lihat Foto</a>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            // 3. Render Panel Admin (Toko Belum Melapor + Tombol WhatsApp)
+            if(isAdmin) {
+                const reportedStoreNames = reportsOnDate.map(r => r.storeLocation);
+                const unreportedStores = MASTER_STORES.filter(store => !reportedStoreNames.includes(store));
+                window.unreportedCache = unreportedStores;
+                const adminPanelEl = document.getElementById("unreportedStoresList");
+
+                if(unreportedStores.length === 0) {
+                    adminPanelEl.innerHTML = `<p class="text-emerald-700 text-xs font-semibold">Mantap! Semua toko sudah mengirim laporan pada tanggal ini.</p>`;
+                } else {
+                    adminPanelEl.innerHTML = unreportedStores.map(store => `
+                        <div class="flex justify-between items-center bg-white p-2.5 rounded border border-amber-200 text-xs">
+                            <span class="font-bold text-gray-700">❌ ${store}</span>
+                            <button onclick="sendWhatsAppReminder('${store}', '${selectedDate}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded font-semibold flex items-center gap-1">
+                                💬 Ingatkan WA
+                            </button>
+                        </div>
+                    `).join("");
+                }
+            }
+
+            // 4. Update Grafik Chart.js
+            updateChart(totalOffline, totalOutdated, totalUnlocked);
+        }
+
+        // Fungsi Lihat Detail Laporan
+        function viewDetail(rep) {
+            let details = typeof rep.details === 'string' ? JSON.parse(rep.details) : rep.details;
+            let detailText = details.map(d => `- ${d.device} (${d.status}): ${d.count} unit`).join("\n");
+            alert(`Detail Laporan:\nStore: ${rep.storeLocation}\nPIC: ${rep.reporterName}\nTanggal: ${rep.date}\n\nKendala Dilaporkan:\n${detailText || "Aman (Tidak ada kendala)"}`);
+        }
+
+        // Fungsi Ingatkan WA Per Toko
+        function sendWhatsAppReminder(storeName, date) {
+            let message = `🚨 *REMINDER DEMO UNIT JUMAT* 🚨\n\n` +
+                          `Halo PIC *${storeName}*,\n` +
+                          `Diingatkan untuk segera mengisi rekapitulasi/laporan demo unit mingguan (Jumat) beserta foto bukti untuk tanggal *${date}* pada sistem monitoring.\n\n` +
+                          `Mohon segera dilaporkan ya. Terima kasih! 🙏`;
+            let waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        // Fungsi Broadcast WA Massal
+        function broadcastWhatsApp() {
+            let unreported = window.unreportedCache || [];
+            let date = document.getElementById("filterDate").value;
+
+            if(unreported.length === 0) {
+                alert("Tidak ada toko yang belum melapor pada tanggal ini!");
+                return;
+            }
+
+            let storeListText = unreported.map(s => `- ${s}`).join("\n");
+            let message = `🚨 *REMINDER MASSAL LAPORAN JUMAT DEMO UNIT* 🚨\n` +
+                          `Tanggal: *${date}*\n\n` +
+                          `Kepada rekan-rekan PIC store berikut yang *belum mengirimkan laporan & foto*: \n${storeListText}\n\n` +
+                          `Mohon segera melakukan pengecekan unit dan mengirimkan laporannya hari ini. Terima kasih! 🙏✨`;
+            
+            let waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        // Fungsi Update Grafik Chart.js
+        function updateChart(offline, outdated, unlocked) {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            if(myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Offline', 'Outdated Content', 'Unlocked'],
+                    datasets: [{
+                        label: 'Jumlah Unit Bermasalah',
+                        data: [offline, outdated, unlocked],
+                        backgroundColor: ['#f59e0b', '#f97316', '#f43f5e'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
