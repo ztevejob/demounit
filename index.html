@@ -280,7 +280,7 @@
 
     <!-- Script Utama -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwda5PXI0JZOijc_XhFyReJsIjSfuDTk1G5_QeFKINg-n1Bsaa247SST_QNF241ZwCWQQ/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwbc9Bmz4Z69999E9ILcWgiLdcMQb1pbqFeVdHsTSv4Jxr30NIWc3N9O_bk2uF4M0QcRg/exec";
 
         let MASTER_KARYAWAN = [];
         let GLOBAL_REPORTS = [];
@@ -350,11 +350,11 @@
 
             input.addEventListener("input", function() {
                 const keyword = this.value.toLowerCase().trim();
-                selectedStaffName = this.value;
                 
                 if (!keyword) {
                     listDiv.classList.add("hidden");
                     listDiv.innerHTML = "";
+                    selectedStaffName = "";
                     clearProfileFields();
                     checkSubmissionStatus();
                     renderStaffSummary();
@@ -387,15 +387,15 @@
             });
         }
 
-        // Fungsi saat nama dari list diklik untuk mengisi profil dan cek status submit
+        // Fungsi saat nama dari list diklik
         window.selectEmployeeName = function(namaKaryawan) {
             const input = document.getElementById("employeeSearch");
             input.value = namaKaryawan;
-            selectedStaffName = namaKaryawan;
+            selectedStaffName = namaKaryawan.trim();
             document.getElementById("autocompleteList").classList.add("hidden");
 
             // 1. Ambil data profil dari Master Karyawan
-            const emp = MASTER_KARYAWAN.find(e => e.nama && e.nama.trim().toLowerCase() === namaKaryawan.trim().toLowerCase());
+            const emp = MASTER_KARYAWAN.find(e => e.nama && e.nama.trim().toLowerCase() === selectedStaffName.toLowerCase());
             
             if (emp) {
                 document.getElementById("valStore").innerText = emp.store || "-";
@@ -429,9 +429,11 @@
                 return;
             }
 
-            const matchReport = GLOBAL_REPORTS.find(r => 
-                r.reporterName && r.reporterName.trim().toLowerCase() === nama
-            );
+            const cleanName = nama.replace(/\s+/g, ' ');
+            const matchReport = GLOBAL_REPORTS.find(r => {
+                if (!r.reporterName) return false;
+                return String(r.reporterName).trim().toLowerCase().replace(/\s+/g, ' ') === cleanName;
+            });
 
             if (matchReport) {
                 statusEl.innerHTML = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">✅ Sudah Submit</span>`;
@@ -446,32 +448,35 @@
             }
         }
 
-        // Render Ringkasan Submit untuk Staff Terpilih dengan Filter Bulan (Diperbaiki)
+        // Render Ringkasan Submit untuk Staff Terpilih dengan Filter Bulan (100% Fix)
         function renderStaffSummary() {
             const tbody = document.getElementById("staffSummaryTableBody");
             const titleSpan = document.getElementById("summaryStaffName");
             const filterMonth = document.getElementById("filterStaffMonth").value;
             
-            if (!selectedStaffName) {
+            const activeName = document.getElementById("employeeSearch").value.trim();
+            
+            if (!activeName) {
                 titleSpan.innerText = "(Belum ada staff dipilih)";
                 tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Silakan pilih staff terlebih dahulu.</td></tr>`;
                 return;
             }
 
-            titleSpan.innerText = `Staff: ${selectedStaffName}`;
-            const targetName = selectedStaffName.trim().toLowerCase();
+            titleSpan.innerText = `Staff: ${activeName}`;
+            const targetName = activeName.toLowerCase().replace(/\s+/g, ' ');
             
-            // Filter berdasarkan nama staff (kebal spasi ekstra dan huruf besar/kecil)
+            // Filter berdasarkan nama staff
             let staffReports = GLOBAL_REPORTS.filter(r => {
                 if (!r.reporterName) return false;
-                return r.reporterName.trim().toLowerCase() === targetName;
+                const cleanReporter = String(r.reporterName).trim().toLowerCase().replace(/\s+/g, ' ');
+                return cleanReporter === targetName;
             });
 
             // Filter berdasarkan bulan dari tanggal transaksi (Kolom B / r.date format YYYY-MM-DD)
             if (filterMonth !== "all") {
                 staffReports = staffReports.filter(r => {
                     if (!r.date) return false;
-                    const parts = r.date.split("-");
+                    const parts = String(r.date).split("-");
                     return parts.length >= 2 && parts[1] === filterMonth;
                 });
             }
@@ -586,7 +591,8 @@
             const totalDays = new Date(year, month + 1, 0).getDate();
 
             // Filter laporan berdasarkan staff terpilih dan membaca kolom B (r.date)
-            const staffReports = GLOBAL_REPORTS.filter(r => !selectedStaffName || (r.reporterName && r.reporterName.trim().toLowerCase() === selectedStaffName.trim().toLowerCase()));
+            const activeSearchName = document.getElementById("employeeSearch").value.trim().toLowerCase().replace(/\s+/g, ' ');
+            const staffReports = GLOBAL_REPORTS.filter(r => !activeSearchName || (r.reporterName && String(r.reporterName).trim().toLowerCase().replace(/\s+/g, ' ') === activeSearchName));
             const submittedDates = staffReports.map(r => r.date);
 
             let html = "";
@@ -634,7 +640,7 @@
             if (filterMonth !== "all") {
                 filteredReports = GLOBAL_REPORTS.filter(r => {
                     if (!r.date) return false;
-                    const parts = r.date.split("-");
+                    const parts = String(r.date).split("-");
                     return parts.length >= 2 && parts[1] === filterMonth;
                 });
             }
