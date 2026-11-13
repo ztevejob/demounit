@@ -9,14 +9,14 @@
 </head>
 <body class="bg-slate-900 text-gray-100 font-sans p-4 sm:p-6">
 
-    <div class="container mx-auto max-w-6xl space-y-6">
+    <div class="container mx-auto max-w-7xl space-y-6">
         
         <!-- Header Navigasi Menu -->
         <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-md">
             <h1 class="font-bold text-emerald-400 tracking-wider text-base sm:text-lg">📊 Portal Monitoring Demo Unit Digimap</h1>
             <div class="flex gap-2">
                 <button onclick="switchTab('submit')" id="tabSubmitBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Menu Submit</button>
-                <button onclick="switchTab('rekap')" id="tabRekapBtn" class="bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Menu Rekap</button>
+                <button onclick="switchTab('rekap')" id="tabRekapBtn" class="bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Kalender & Rekap</button>
             </div>
         </div>
 
@@ -28,73 +28,99 @@
         <!-- === VIEW 1: MENU SUBMIT & PROFILE === -->
         <div id="viewSubmit" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- KOLOM KIRI: EMPLOYEE PROFILE -->
-            <div class="lg:col-span-2 bg-slate-800 shadow-lg rounded-2xl overflow-hidden border border-slate-700">
-                <div class="bg-purple-700 text-white px-6 py-4 flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                    </svg>
-                    <h2 class="font-bold tracking-wider text-sm uppercase">Employee Profile</h2>
+            <!-- KOLOM KIRI: EMPLOYEE PROFILE & RINGKASAN SUBMIT -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Employee Profile Card -->
+                <div class="bg-slate-800 shadow-lg rounded-2xl overflow-hidden border border-slate-700">
+                    <div class="bg-purple-700 text-white px-6 py-4 flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                        </svg>
+                        <h2 class="font-bold tracking-wider text-sm uppercase">Employee Profile</h2>
+                    </div>
+
+                    <div class="p-6 overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <tbody class="divide-y divide-slate-700/60">
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400 w-1/3">Employee Name</td>
+                                    <td class="relative">
+                                        <input type="text" id="employeeSearch" placeholder="Ketik nama karyawan..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-purple-500 focus:outline-none" autocomplete="off">
+                                        <div id="autocompleteList" class="absolute left-0 right-0 bg-slate-900 border border-slate-700 rounded-lg mt-1 max-h-48 overflow-y-auto z-50 hidden shadow-2xl"></div>
+                                    </td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">Status Submit Hari Ini</td>
+                                    <td id="statusSubmit">
+                                        <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>
+                                    </td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">Bukti Screenshot</td>
+                                    <td id="valScreenshot" class="text-slate-300">-</td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">Store</td>
+                                    <td id="valStore" class="text-slate-300">-</td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">NIK</td>
+                                    <td id="valNik" class="text-slate-300">-</td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">Work Experience</td>
+                                    <td id="valExp" class="text-slate-300">-</td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">SEED Registered Email</td>
+                                    <td id="valEmail" class="text-slate-300">-</td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">Positions</td>
+                                    <td id="valPosition" class="text-slate-300">-</td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">RH</td>
+                                    <td id="valRh" class="text-slate-300">-</td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">AM</td>
+                                    <td id="valAm" class="text-slate-300">-</td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">Type Store</td>
+                                    <td id="valTypeStore" class="text-slate-300">-</td>
+                                </tr>
+                                <tr class="h-12">
+                                    <td class="font-semibold text-slate-400">Trainer HO</td>
+                                    <td id="valTrainer" class="text-slate-300">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <div class="p-6 overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <tbody class="divide-y divide-slate-700/60">
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400 w-1/3">Employee Name</td>
-                                <td class="relative">
-                                    <input type="text" id="employeeSearch" placeholder="Ketik nama karyawan..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-purple-500 focus:outline-none" autocomplete="off">
-                                    <div id="autocompleteList" class="absolute left-0 right-0 bg-slate-900 border border-slate-700 rounded-lg mt-1 max-h-48 overflow-y-auto z-50 hidden shadow-2xl"></div>
-                                </td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">Status Submit Hari Ini</td>
-                                <td id="statusSubmit">
-                                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>
-                                </td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">Bukti Screenshot</td>
-                                <td id="valScreenshot" class="text-slate-300">-</td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">Store</td>
-                                <td id="valStore" class="text-slate-300">-</td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">NIK</td>
-                                <td id="valNik" class="text-slate-300">-</td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">Work Experience</td>
-                                <td id="valExp" class="text-slate-300">-</td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">SEED Registered Email</td>
-                                <td id="valEmail" class="text-slate-300">-</td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">Positions</td>
-                                <td id="valPosition" class="text-slate-300">-</td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">RH</td>
-                                <td id="valRh" class="text-slate-300">-</td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">AM</td>
-                                <td id="valAm" class="text-slate-300">-</td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">Type Store</td>
-                                <td id="valTypeStore" class="text-slate-300">-</td>
-                            </tr>
-                            <tr class="h-12">
-                                <td class="font-semibold text-slate-400">Trainer HO</td>
-                                <td id="valTrainer" class="text-slate-300">-</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Ringkasan Submit Staff Terpilih -->
+                <div class="bg-slate-800 shadow-lg rounded-2xl p-6 border border-slate-700 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Ringkasan Submit Staff Terpilih</h3>
+                        <span id="summaryStaffName" class="text-xs text-slate-400">(Belum ada staff dipilih)</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-700">
+                                    <th class="p-3">Tanggal Laporan</th>
+                                    <th class="p-3">Store / Cabang</th>
+                                    <th class="p-3">Catatan</th>
+                                    <th class="p-3 text-center">Bukti Foto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffSummaryTableBody" class="divide-y divide-slate-700/50 text-slate-300">
+                                <tr><td colspan="4" class="p-4 text-center text-slate-500">Silakan ketik dan pilih nama karyawan di atas.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -136,14 +162,14 @@
             </div>
         </div>
 
-        <!-- === VIEW 2: MENU REKAP & KALENDER AKTIVITAS === -->
-        <div id="viewRekap" class="hidden space-y-6">
+        <!-- === VIEW 2: KALENDER & REKAP === -->
+        <div id="viewRekap" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             <!-- KALENDER AKTIVITAS SUBMIT -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-5">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div class="flex items-center gap-2 text-emerald-400 font-bold uppercase text-sm tracking-wider">
-                        <span>📅</span> Kalender Aktivitas Submit
+                        <span>📅</span> Kalender Aktivitas Submit (<span id="calendarMonthTitle">Nov 2026</span>)
                     </div>
                     <div class="flex items-center gap-3 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700">
                         <span id="calendarMonthLabel" class="text-xs font-bold text-white">Nov 2026</span>
@@ -154,12 +180,9 @@
                     </div>
                 </div>
 
-                <!-- Bar Status Karyawan & Indikator -->
-                <div class="bg-slate-900/80 border border-slate-700 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
-                    <div>
-                        <span class="text-slate-400 font-medium">Staff: </span>
-                        <span id="calendarStaffName" class="text-emerald-400 font-bold">(Ketik Nama di Menu Submit)</span>
-                    </div>
+                <!-- Indikator Status -->
+                <div class="bg-slate-900/80 border border-slate-700 p-3 rounded-xl flex justify-between items-center text-xs">
+                    <span class="text-slate-400 font-medium">Status Aktivitas Bulanan</span>
                     <div class="flex items-center gap-4 text-xs font-semibold">
                         <span class="flex items-center gap-1.5 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Submitted</span>
                         <span class="flex items-center gap-1.5 text-rose-400"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Belum</span>
@@ -177,25 +200,24 @@
                 </div>
             </div>
 
-            <!-- TABEL REKAP & TOMBOL LIHAT TOKO -->
+            <!-- DAFTAR REKAPITULASI SUBMIT TOKO -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
                 <div class="flex justify-between items-center border-b border-slate-700 pb-3">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Daftar Rekapitulasi Submit Toko</h3>
-                    <button onclick="fetchAllData()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-lg transition">🔄 Refresh Data</button>
+                    <button onclick="fetchAllData()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-lg transition">🔄 Refresh</button>
                 </div>
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto max-h-[360px]">
                     <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-700">
-                                <th class="p-3">Tanggal</th>
-                                <th class="p-3">Store / Cabang</th>
-                                <th class="p-3">Nama Karyawan</th>
-                                <th class="p-3">Catatan / NIK</th>
-                                <th class="p-3 text-center">Aksi Toko & Foto</th>
+                        <thead class="sticky top-0 bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-700">
+                            <tr>
+                                <th class="p-2.5">Tanggal</th>
+                                <th class="p-2.5">Store</th>
+                                <th class="p-2.5">Nama</th>
+                                <th class="p-2.5 text-center">Aksi & Foto</th>
                             </tr>
                         </thead>
                         <tbody id="rekapTableBody" class="divide-y divide-slate-700/50 text-slate-300">
-                            <tr><td colspan="5" class="p-6 text-center text-slate-500">Memuat data rekap...</td></tr>
+                            <tr><td colspan="4" class="p-6 text-center text-slate-500">Memuat data rekap...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -254,7 +276,9 @@
                 btnRekap.className = "bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
             } else {
                 viewSubmit.classList.add("hidden");
+                viewRekap.classList.remove("grid", "lg:grid-cols-2");
                 viewRekap.classList.remove("hidden");
+                viewRekap.classList.add("grid", "lg:grid-cols-2");
                 btnRekap.className = "bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
                 btnSubmit.className = "bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
                 renderCalendar();
@@ -271,6 +295,7 @@
                     GLOBAL_REPORTS = Array.isArray(data) ? data : (data.reports || []);
                     MASTER_KARYAWAN = data.employees || [];
                     checkSubmissionStatus();
+                    renderStaffSummary();
                 })
                 .catch(err => {
                     showLoading(false);
@@ -286,13 +311,13 @@
             input.addEventListener("input", function() {
                 const keyword = this.value.toLowerCase().trim();
                 selectedStaffName = this.value;
-                document.getElementById("calendarStaffName").innerText = selectedStaffName || "(Ketik Nama di Menu Submit)";
                 
                 if (!keyword) {
                     listDiv.classList.add("hidden");
                     listDiv.innerHTML = "";
                     clearProfileFields();
                     checkSubmissionStatus();
+                    renderStaffSummary();
                     return;
                 }
 
@@ -311,6 +336,7 @@
                     listDiv.classList.remove("hidden");
                     clearProfileFields();
                     checkSubmissionStatus();
+                    renderStaffSummary();
                 }
             });
 
@@ -326,7 +352,6 @@
             const input = document.getElementById("employeeSearch");
             input.value = namaKaryawan;
             selectedStaffName = namaKaryawan;
-            document.getElementById("calendarStaffName").innerText = namaKaryawan;
             document.getElementById("autocompleteList").classList.add("hidden");
 
             // 1. Ambil data profil dari Master Karyawan
@@ -346,16 +371,15 @@
                 clearProfileFields();
             }
 
-            // 2. Cek Status Submit Berdasarkan Tanggal yang Dipilih
+            // 2. Cek Status Submit & Update Ringkasan Staff
             checkSubmissionStatus();
+            renderStaffSummary();
             renderCalendar();
         };
 
-        // Fungsi untuk mencocokkan nama & tanggal dengan sheet Submit (Kolom B dan Kolom F)
+        // Fungsi untuk mencocokkan nama dengan sheet Submit
         function checkSubmissionStatus() {
             const nama = document.getElementById("employeeSearch").value.trim().toLowerCase();
-            const tanggalPilih = document.getElementById("submitDate").value; // Format YYYY-MM-DD
-            
             const statusEl = document.getElementById("statusSubmit");
             const fotoEl = document.getElementById("valScreenshot");
 
@@ -365,14 +389,11 @@
                 return;
             }
 
-            // Cari apakah ada data di GLOBAL_REPORTS yang match Nama DAN Tanggal (Kolom B)
             const matchReport = GLOBAL_REPORTS.find(r => 
-                r.reporterName && r.reporterName.trim().toLowerCase() === nama && 
-                r.date === tanggalPilih
+                r.reporterName && r.reporterName.trim().toLowerCase() === nama
             );
 
             if (matchReport) {
-                // Sudah Submit
                 statusEl.innerHTML = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">✅ Sudah Submit</span>`;
                 if (matchReport.fileUrl) {
                     fotoEl.innerHTML = `<a href="${matchReport.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">🖼️ Lihat Foto (Kolom F)</a>`;
@@ -380,14 +401,42 @@
                     fotoEl.innerHTML = `<span class="text-slate-400">Terdata (Tanpa Foto)</span>`;
                 }
             } else {
-                // Belum Submit
                 statusEl.innerHTML = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Belum Submit</span>`;
                 fotoEl.innerText = "-";
             }
         }
 
-        // Jalankan pengecekan status saat tanggal diubah
-        document.getElementById("submitDate").addEventListener("change", checkSubmissionStatus);
+        // Render Ringkasan Submit untuk Staff Terpilih
+        function renderStaffSummary() {
+            const tbody = document.getElementById("staffSummaryTableBody");
+            const titleSpan = document.getElementById("summaryStaffName");
+            const nama = selectedStaffName.trim().toLowerCase();
+
+            if (!nama) {
+                titleSpan.innerText = "(Belum ada staff dipilih)";
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Silakan pilih staff terlebih dahulu.</td></tr>`;
+                return;
+            }
+
+            titleSpan.innerText = `Staff: ${selectedStaffName}`;
+            const staffReports = GLOBAL_REPORTS.filter(r => r.reporterName && r.reporterName.trim().toLowerCase() === nama);
+
+            if (staffReports.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Belum ada riwayat submit untuk staff ini.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = staffReports.map(r => `
+                <tr class="hover:bg-slate-700/30 transition">
+                    <td class="p-3 text-slate-400">${r.date || '-'}</td>
+                    <td class="p-3 font-semibold text-white">${r.storeLocation || '-'}</td>
+                    <td class="p-3 text-slate-400">${r.notes || '-'}</td>
+                    <td class="p-3 text-center">
+                        ${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold text-xs">🖼️ Lihat Foto</a>` : '-'}
+                    </td>
+                </tr>
+            `).join("");
+        }
 
         function clearProfileFields() {
             document.getElementById("valStore").innerText = "-";
@@ -468,11 +517,15 @@
         function renderCalendar() {
             const grid = document.getElementById("calendarGrid");
             const monthLabel = document.getElementById("calendarMonthLabel");
+            const monthTitle = document.getElementById("calendarMonthTitle");
 
             const year = currentCalendarDate.getFullYear();
             const month = currentCalendarDate.getMonth();
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+            const fullMonthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            
             monthLabel.innerText = `${monthNames[month]} ${year}`;
+            monthTitle.innerText = `${fullMonthNames[month]} ${year}`;
 
             const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; 
             const totalDays = new Date(year, month + 1, 0).getDate();
@@ -517,7 +570,7 @@
         function renderRekapTable() {
             const tbody = document.getElementById("rekapTableBody");
             if (!GLOBAL_REPORTS || GLOBAL_REPORTS.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Belum ada data rekapitulasi submit.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Belum ada data rekapitulasi submit.</td></tr>`;
                 return;
             }
 
@@ -525,16 +578,14 @@
                 const store = rep.storeLocation || "-";
                 const date = rep.date || "-";
                 const name = rep.reporterName || "-";
-                const notes = rep.notes || "-";
                 return `
                     <tr class="hover:bg-slate-700/30 transition">
-                        <td class="p-3 text-slate-400">${date}</td>
-                        <td class="p-3 font-semibold text-white">${store}</td>
-                        <td class="p-3 text-slate-300">${name}</td>
-                        <td class="p-3 text-slate-400">${notes}</td>
-                        <td class="p-3 text-center flex items-center justify-center gap-2">
-                            <button onclick="openStoreDetail('${store}', '${date}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded text-[11px] font-medium transition shadow">🏪 Lihat Toko</button>
-                            ${rep.fileUrl ? `<a href="${rep.fileUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded text-[11px] font-medium transition shadow">🖼️ Foto</a>` : ''}
+                        <td class="p-2.5 text-slate-400">${date}</td>
+                        <td class="p-2.5 font-semibold text-white truncate max-w-[120px]" title="${store}">${store}</td>
+                        <td class="p-2.5 text-slate-300 truncate max-w-[100px]" title="${name}">${name}</td>
+                        <td class="p-2.5 text-center flex items-center justify-center gap-1.5">
+                            <button onclick="openStoreDetail('${store}', '${date}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-medium transition shadow">🏪</button>
+                            ${rep.fileUrl ? `<a href="${rep.fileUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-[10px] font-medium transition shadow">🖼️</a>` : ''}
                         </td>
                     </tr>
                 `;
