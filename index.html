@@ -102,9 +102,29 @@
 
                 <!-- Ringkasan Submit Staff Terpilih -->
                 <div class="bg-slate-800 shadow-lg rounded-2xl p-6 border border-slate-700 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-700 pb-3">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Ringkasan Submit Staff Terpilih</h3>
-                        <span id="summaryStaffName" class="text-xs text-slate-400">(Belum ada staff dipilih)</span>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700 pb-3">
+                        <div>
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Ringkasan Submit Staff Terpilih</h3>
+                            <span id="summaryStaffName" class="text-xs text-slate-400">(Belum ada staff dipilih)</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-slate-400">Filter Bulan:</span>
+                            <select id="filterStaffMonth" onchange="renderStaffSummary()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                                <option value="all">Semua Bulan</option>
+                                <option value="01">Januari</option>
+                                <option value="02">Februari</option>
+                                <option value="03">Maret</option>
+                                <option value="04">April</option>
+                                <option value="05">Mei</option>
+                                <option value="06">Juni</option>
+                                <option value="07">Juli</option>
+                                <option value="08">Agustus</option>
+                                <option value="09">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11" selected>November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
@@ -202,9 +222,26 @@
 
             <!-- DAFTAR REKAPITULASI SUBMIT TOKO -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
-                <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700 pb-3">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Daftar Rekapitulasi Submit Toko</h3>
-                    <button onclick="fetchAllData()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-lg transition">🔄 Refresh</button>
+                    <div class="flex items-center gap-2">
+                        <select id="filterRekapMonth" onchange="renderRekapTable()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            <option value="all">Semua Bulan</option>
+                            <option value="01">Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11" selected>November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                        <button onclick="fetchAllData()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-2.5 py-1.5 rounded-lg transition">🔄</button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto max-h-[360px]">
                     <table class="w-full text-left text-xs border-collapse">
@@ -296,6 +333,9 @@
                     MASTER_KARYAWAN = data.employees || [];
                     checkSubmissionStatus();
                     renderStaffSummary();
+                    if(!document.getElementById("viewRekap").classList.contains("hidden")) {
+                        renderRekapTable();
+                    }
                 })
                 .catch(err => {
                     showLoading(false);
@@ -406,10 +446,11 @@
             }
         }
 
-        // Render Ringkasan Submit untuk Staff Terpilih
+        // Render Ringkasan Submit untuk Staff Terpilih dengan Filter Bulan
         function renderStaffSummary() {
             const tbody = document.getElementById("staffSummaryTableBody");
             const titleSpan = document.getElementById("summaryStaffName");
+            const filterMonth = document.getElementById("filterStaffMonth").value;
             const nama = selectedStaffName.trim().toLowerCase();
 
             if (!nama) {
@@ -419,10 +460,22 @@
             }
 
             titleSpan.innerText = `Staff: ${selectedStaffName}`;
-            const staffReports = GLOBAL_REPORTS.filter(r => r.reporterName && r.reporterName.trim().toLowerCase() === nama);
+            
+            // Filter berdasarkan nama staff
+            let staffReports = GLOBAL_REPORTS.filter(r => r.reporterName && r.reporterName.trim().toLowerCase() === nama);
+
+            // Filter berdasarkan bulan dari tanggal transaksi (Kolom B / r.date format YYYY-MM-DD)
+            if (filterMonth !== "all") {
+                staffReports = staffReports.filter(r => {
+                    if (!r.date) return false;
+                    const parts = r.date.split("-");
+                    // parts[1] adalah bulan (MM)
+                    return parts.length >= 2 && parts[1] === filterMonth;
+                });
+            }
 
             if (staffReports.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Belum ada riwayat submit untuk staff ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Belum ada riwayat submit untuk periode ini.</td></tr>`;
                 return;
             }
 
@@ -513,7 +566,7 @@
             reader.readAsDataURL(file);
         });
 
-        // RENDER KALENDER AKTIVITAS SUBMIT
+        // RENDER KALENDER AKTIVITAS SUBMIT (Membaca Kolom B Tanggal Laporan)
         function renderCalendar() {
             const grid = document.getElementById("calendarGrid");
             const monthLabel = document.getElementById("calendarMonthLabel");
@@ -530,6 +583,7 @@
             const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; 
             const totalDays = new Date(year, month + 1, 0).getDate();
 
+            // Filter laporan berdasarkan staff terpilih dan membaca kolom B (r.date)
             const staffReports = GLOBAL_REPORTS.filter(r => !selectedStaffName || r.reporterName.toLowerCase() === selectedStaffName.toLowerCase());
             const submittedDates = staffReports.map(r => r.date);
 
@@ -567,14 +621,28 @@
             renderCalendar();
         }
 
+        // Render Tabel Rekapitulasi dengan Filter Bulan
         function renderRekapTable() {
             const tbody = document.getElementById("rekapTableBody");
-            if (!GLOBAL_REPORTS || GLOBAL_REPORTS.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Belum ada data rekapitulasi submit.</td></tr>`;
+            const filterMonth = document.getElementById("filterRekapMonth").value;
+
+            let filteredReports = GLOBAL_REPORTS;
+
+            // Filter berdasarkan bulan dari tanggal transaksi (Kolom B / r.date)
+            if (filterMonth !== "all") {
+                filteredReports = GLOBAL_REPORTS.filter(r => {
+                    if (!r.date) return false;
+                    const parts = r.date.split("-");
+                    return parts.length >= 2 && parts[1] === filterMonth;
+                });
+            }
+
+            if (!filteredReports || filteredReports.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Tidak ada data rekap untuk periode ini.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = GLOBAL_REPORTS.map(rep => {
+            tbody.innerHTML = filteredReports.map(rep => {
                 const store = rep.storeLocation || "-";
                 const date = rep.date || "-";
                 const name = rep.reporterName || "-";
