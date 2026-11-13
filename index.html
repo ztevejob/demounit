@@ -50,7 +50,7 @@
                             <tr class="h-12">
                                 <td class="font-semibold text-slate-400">Status Submit Hari Ini</td>
                                 <td id="statusSubmit">
-                                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Belum Submit</span>
+                                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>
                                 </td>
                             </tr>
                             <tr class="h-12">
@@ -221,7 +221,7 @@
 
     <!-- Script Utama -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx28jl2mX5E2UFA-9PYw32ZC8kZDCC3KTA9yCLUvqItfPLzTvHpkQg6Uaw_A76nANa-/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQXoEEBaZRiGr1Saor-R3k7Br_Rr3BcTKzhHOp21X5Wlj_cGS_WkOaQGja1Ij5zUz9CQ/exec";
 
         let MASTER_KARYAWAN = [];
         let GLOBAL_REPORTS = [];
@@ -270,6 +270,7 @@
                     showLoading(false);
                     GLOBAL_REPORTS = Array.isArray(data) ? data : (data.reports || []);
                     MASTER_KARYAWAN = data.employees || [];
+                    checkSubmissionStatus();
                 })
                 .catch(err => {
                     showLoading(false);
@@ -291,6 +292,7 @@
                     listDiv.classList.add("hidden");
                     listDiv.innerHTML = "";
                     clearProfileFields();
+                    checkSubmissionStatus();
                     return;
                 }
 
@@ -308,6 +310,7 @@
                     listDiv.innerHTML = `<div class="p-3 text-xs text-slate-400">Nama tidak ditemukan di Master Karyawan</div>`;
                     listDiv.classList.remove("hidden");
                     clearProfileFields();
+                    checkSubmissionStatus();
                 }
             });
 
@@ -318,7 +321,7 @@
             });
         }
 
-        // Fungsi saat nama dari list diklik untuk mengisi otomatis seluruh field
+        // Fungsi saat nama dari list diklik untuk mengisi profil dan cek status submit
         window.selectEmployeeName = function(namaKaryawan) {
             const input = document.getElementById("employeeSearch");
             input.value = namaKaryawan;
@@ -326,8 +329,8 @@
             document.getElementById("calendarStaffName").innerText = namaKaryawan;
             document.getElementById("autocompleteList").classList.add("hidden");
 
-            // Cari data lengkap karyawan berdasarkan nama
-            const emp = MASTER_KARYAWAN.find(e => e.nama.toLowerCase() === namaKaryawan.toLowerCase());
+            // 1. Ambil data profil dari Master Karyawan
+            const emp = MASTER_KARYAWAN.find(e => e.nama && e.nama.trim().toLowerCase() === namaKaryawan.trim().toLowerCase());
             
             if (emp) {
                 document.getElementById("valStore").innerText = emp.store || "-";
@@ -343,8 +346,48 @@
                 clearProfileFields();
             }
 
+            // 2. Cek Status Submit Berdasarkan Tanggal yang Dipilih
+            checkSubmissionStatus();
             renderCalendar();
         };
+
+        // Fungsi untuk mencocokkan nama & tanggal dengan sheet Submit (Kolom B dan Kolom F)
+        function checkSubmissionStatus() {
+            const nama = document.getElementById("employeeSearch").value.trim().toLowerCase();
+            const tanggalPilih = document.getElementById("submitDate").value; // Format YYYY-MM-DD
+            
+            const statusEl = document.getElementById("statusSubmit");
+            const fotoEl = document.getElementById("valScreenshot");
+
+            if (!nama) {
+                statusEl.innerHTML = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>`;
+                fotoEl.innerText = "-";
+                return;
+            }
+
+            // Cari apakah ada data di GLOBAL_REPORTS yang match Nama DAN Tanggal (Kolom B)
+            const matchReport = GLOBAL_REPORTS.find(r => 
+                r.reporterName && r.reporterName.trim().toLowerCase() === nama && 
+                r.date === tanggalPilih
+            );
+
+            if (matchReport) {
+                // Sudah Submit
+                statusEl.innerHTML = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">✅ Sudah Submit</span>`;
+                if (matchReport.fileUrl) {
+                    fotoEl.innerHTML = `<a href="${matchReport.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">🖼️ Lihat Foto (Kolom F)</a>`;
+                } else {
+                    fotoEl.innerHTML = `<span class="text-slate-400">Terdata (Tanpa Foto)</span>`;
+                }
+            } else {
+                // Belum Submit
+                statusEl.innerHTML = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Belum Submit</span>`;
+                fotoEl.innerText = "-";
+            }
+        }
+
+        // Jalankan pengecekan status saat tanggal diubah
+        document.getElementById("submitDate").addEventListener("change", checkSubmissionStatus);
 
         function clearProfileFields() {
             document.getElementById("valStore").innerText = "-";
@@ -403,8 +446,6 @@
                         alert("Data dan screenshot berhasil disubmit!");
                         document.getElementById("submitForm").reset();
                         document.getElementById("submitDate").value = new Date().toISOString().split('T')[0];
-                        document.getElementById("statusSubmit").innerHTML = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">✅ Sudah Submit</span>`;
-                        document.getElementById("valScreenshot").innerHTML = `<a href="${response.fileUrl || '#'}" target="_blank" class="text-blue-400 underline">Lihat Foto</a>`;
                         fetchAllData();
                     } else {
                         alert("Gagal dari Server: " + (response.message || "Unknown error"));
