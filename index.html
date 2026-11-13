@@ -446,30 +446,32 @@
             }
         }
 
-        // Render Ringkasan Submit untuk Staff Terpilih dengan Filter Bulan
+        // Render Ringkasan Submit untuk Staff Terpilih dengan Filter Bulan (Diperbaiki)
         function renderStaffSummary() {
             const tbody = document.getElementById("staffSummaryTableBody");
             const titleSpan = document.getElementById("summaryStaffName");
             const filterMonth = document.getElementById("filterStaffMonth").value;
-            const nama = selectedStaffName.trim().toLowerCase();
-
-            if (!nama) {
+            
+            if (!selectedStaffName) {
                 titleSpan.innerText = "(Belum ada staff dipilih)";
                 tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Silakan pilih staff terlebih dahulu.</td></tr>`;
                 return;
             }
 
             titleSpan.innerText = `Staff: ${selectedStaffName}`;
+            const targetName = selectedStaffName.trim().toLowerCase();
             
-            // Filter berdasarkan nama staff
-            let staffReports = GLOBAL_REPORTS.filter(r => r.reporterName && r.reporterName.trim().toLowerCase() === nama);
+            // Filter berdasarkan nama staff (kebal spasi ekstra dan huruf besar/kecil)
+            let staffReports = GLOBAL_REPORTS.filter(r => {
+                if (!r.reporterName) return false;
+                return r.reporterName.trim().toLowerCase() === targetName;
+            });
 
             // Filter berdasarkan bulan dari tanggal transaksi (Kolom B / r.date format YYYY-MM-DD)
             if (filterMonth !== "all") {
                 staffReports = staffReports.filter(r => {
                     if (!r.date) return false;
                     const parts = r.date.split("-");
-                    // parts[1] adalah bulan (MM)
                     return parts.length >= 2 && parts[1] === filterMonth;
                 });
             }
@@ -566,7 +568,7 @@
             reader.readAsDataURL(file);
         });
 
-        // RENDER KALENDER AKTIVITAS SUBMIT (Membaca Kolom B Tanggal Laporan)
+        // RENDER KALENDER AKTIVITAS SUBMIT (Murni membaca Kolom B Tanggal Laporan)
         function renderCalendar() {
             const grid = document.getElementById("calendarGrid");
             const monthLabel = document.getElementById("calendarMonthLabel");
@@ -584,7 +586,7 @@
             const totalDays = new Date(year, month + 1, 0).getDate();
 
             // Filter laporan berdasarkan staff terpilih dan membaca kolom B (r.date)
-            const staffReports = GLOBAL_REPORTS.filter(r => !selectedStaffName || r.reporterName.toLowerCase() === selectedStaffName.toLowerCase());
+            const staffReports = GLOBAL_REPORTS.filter(r => !selectedStaffName || (r.reporterName && r.reporterName.trim().toLowerCase() === selectedStaffName.trim().toLowerCase()));
             const submittedDates = staffReports.map(r => r.date);
 
             let html = "";
