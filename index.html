@@ -42,10 +42,9 @@
                         <tbody class="divide-y divide-slate-700/60">
                             <tr class="h-12">
                                 <td class="font-semibold text-slate-400 w-1/3">Employee Name</td>
-                                <td>
-                                    <select id="employeeSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-purple-500 focus:outline-none">
-                                        <option value="">-- Pilih Nama Karyawan --</option>
-                                    </select>
+                                <td class="relative">
+                                    <input type="text" id="employeeSearch" placeholder="Ketik nama karyawan..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-purple-500 focus:outline-none" autocomplete="off">
+                                    <div id="autocompleteList" class="absolute left-0 right-0 bg-slate-900 border border-slate-700 rounded-lg mt-1 max-h-48 overflow-y-auto z-50 hidden shadow-2xl"></div>
                                 </td>
                             </tr>
                             <tr class="h-12">
@@ -99,7 +98,7 @@
                 </div>
             </div>
 
-            <!-- KOLOM KANAN: MENU SUBMIT & INFORMASI RUTIN -->
+            <!-- KOLOM KANAN: MENU SUBMIT & INFORMASI -->
             <div class="space-y-6">
                 <!-- Card Menu Submit -->
                 <div class="bg-slate-800 shadow-lg rounded-2xl p-6 border border-slate-700">
@@ -140,7 +139,7 @@
         <!-- === VIEW 2: MENU REKAP & KALENDER AKTIVITAS === -->
         <div id="viewRekap" class="hidden space-y-6">
             
-            <!-- KALENDER AKTIVITAS SUBMIT (Sesuai Referensi Gambar) -->
+            <!-- KALENDER AKTIVITAS SUBMIT -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-5">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div class="flex items-center gap-2 text-emerald-400 font-bold uppercase text-sm tracking-wider">
@@ -159,7 +158,7 @@
                 <div class="bg-slate-900/80 border border-slate-700 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
                     <div>
                         <span class="text-slate-400 font-medium">Staff: </span>
-                        <span id="calendarStaffName" class="text-emerald-400 font-bold">(Pilih Karyawan di Menu Submit / Rekap)</span>
+                        <span id="calendarStaffName" class="text-emerald-400 font-bold">(Ketik Nama di Menu Submit)</span>
                     </div>
                     <div class="flex items-center gap-4 text-xs font-semibold">
                         <span class="flex items-center gap-1.5 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Submitted</span>
@@ -178,7 +177,7 @@
                 </div>
             </div>
 
-            <!-- TABEL TABEL REKAP & TOMBOL LIHAT TOKO -->
+            <!-- TABEL REKAP & TOMBOL LIHAT TOKO -->
             <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
                 <div class="flex justify-between items-center border-b border-slate-700 pb-3">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Daftar Rekapitulasi Submit Toko</h3>
@@ -213,9 +212,7 @@
                 <h3 id="modalTitle" class="font-bold text-white text-sm">Detail Toko</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
             </div>
-            <div id="modalBody" class="space-y-3 text-xs text-slate-300">
-                <!-- Konten Detail -->
-            </div>
+            <div id="modalBody" class="space-y-3 text-xs text-slate-300"></div>
             <div class="flex justify-end pt-2">
                 <button onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs font-semibold">Tutup</button>
             </div>
@@ -224,7 +221,7 @@
 
     <!-- Script Utama -->
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz_q6uXd7JA-Uy97RGo6kmrcJOi8F6DrmJ87bQNy7z5gEHRdRmJ3VhaF_Q-pK7nwajFYg/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx_EcKfyTadkcEtPRlmMLgYqDp7fRbILfcFWj8wYHOQ_w8axhGkL5eXXGeBQ0BgVN9vZg/exec";
 
         let MASTER_KARYAWAN = [];
         let GLOBAL_REPORTS = [];
@@ -234,18 +231,16 @@
         document.addEventListener("DOMContentLoaded", () => {
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById("submitDate").value = todayStr;
-
             fetchAllData();
+            setupEmployeeSearch();
         });
 
-        // Toggle Loading Bar
         function showLoading(show) {
             const bar = document.getElementById("loadingBar");
             if (show) bar.classList.remove("hidden");
             else bar.classList.add("hidden");
         }
 
-        // Switch Tabs (Submit vs Rekap)
         function switchTab(tab) {
             const viewSubmit = document.getElementById("viewSubmit");
             const viewRekap = document.getElementById("viewRekap");
@@ -267,85 +262,108 @@
             }
         }
 
-        // Fetch Data Master Karyawan & Laporan Submit dari Google Sheets
         function fetchAllData() {
             showLoading(true);
             fetch(WEB_APP_URL)
                 .then(res => res.json())
                 .then(data => {
                     showLoading(false);
-                    // Asumsi struktur doGet mengembalikan objek/array gabungan atau array laporan.
-                    // Jika data master terpisah, kita inisialisasi master karyawan dari data atau fallback.
                     GLOBAL_REPORTS = Array.isArray(data) ? data : (data.reports || []);
-                    MASTER_KARYAWAN = data.employees || [
-                        { nama: "Ahmad Fathoni", store: "Digimap Tunjungan Plaza", nik: "123456", exp: "2 Tahun", email: "ahmad.fathoni@digimap.com", position: "Staff", rh: "Budi", am: "Riyan", typeStore: "Flagship", trainer: "Novi Riyanto" },
-                        { nama: "Siska Melina", store: "Digimap Galaxy Mall", nik: "654321", exp: "1 Tahun", email: "siska.melina@digimap.com", position: "Kasir", rh: "Ani", am: "Suhartono", typeStore: "Standard", trainer: "Frandy" }
-                    ];
-
-                    populateEmployeeDropdown();
-                    renderRekapTable();
-                    renderCalendar();
+                    MASTER_KARYAWAN = data.employees || [];
                 })
                 .catch(err => {
                     showLoading(false);
                     console.error("Gagal memuat data:", err);
-                    // Fallback data demo jika gagal fetch agar UI tetap interaktif
-                    MASTER_KARYAWAN = [
-                        { nama: "Ahmad Fathoni", store: "Digimap Tunjungan Plaza", nik: "123456", exp: "2 Tahun", email: "ahmad.fathoni@digimap.com", position: "Staff", rh: "Budi", am: "Riyan", typeStore: "Flagship", trainer: "Novi Riyanto" },
-                        { nama: "Siska Melina", store: "Digimap Galaxy Mall", nik: "654321", exp: "1 Tahun", email: "siska.melina@digimap.com", position: "Kasir", rh: "Ani", am: "Suhartono", typeStore: "Standard", trainer: "Frandy" }
-                    ];
-                    populateEmployeeDropdown();
                 });
         }
 
-        // Populate Dropdown Employee Name dari Master Karyawan
-        function populateEmployeeDropdown() {
-            const select = document.getElementById("employeeSelect");
-            select.innerHTML = '<option value="">-- Pilih Nama Karyawan --</option>';
-            MASTER_KARYAWAN.forEach(emp => {
-                let opt = document.createElement("option");
-                opt.value = emp.nama;
-                opt.textContent = emp.nama + (emp.store ? ` (${emp.store})` : '');
-                select.appendChild(opt);
+        // Setup Pencarian Nama Karyawan & Auto-Fill Profil
+        function setupEmployeeSearch() {
+            const input = document.getElementById("employeeSearch");
+            const listDiv = document.getElementById("autocompleteList");
+
+            input.addEventListener("input", function() {
+                const keyword = this.value.toLowerCase().trim();
+                selectedStaffName = this.value;
+                document.getElementById("calendarStaffName").innerText = selectedStaffName || "(Ketik Nama di Menu Submit)";
+                
+                if (!keyword) {
+                    listDiv.classList.add("hidden");
+                    listDiv.innerHTML = "";
+                    clearProfileFields();
+                    return;
+                }
+
+                const matches = MASTER_KARYAWAN.filter(emp => emp.nama && emp.nama.toLowerCase().includes(keyword));
+                
+                if (matches.length > 0) {
+                    listDiv.innerHTML = matches.map(emp => `
+                        <div class="p-3 hover:bg-purple-900/50 cursor-pointer border-b border-slate-700 text-xs text-white transition flex justify-between items-center" onclick="selectEmployeeName('${emp.nama.replace(/'/g, "\\'")}')">
+                            <div><b>${emp.nama}</b> <span class="text-slate-400">(${emp.store || 'Tanpa Store'})</span></div>
+                            <span class="text-[10px] bg-purple-600 text-white px-2 py-0.5 rounded">Pilih</span>
+                        </div>
+                    `).join("");
+                    listDiv.classList.remove("hidden");
+                } else {
+                    listDiv.innerHTML = `<div class="p-3 text-xs text-slate-400">Nama tidak ditemukan di Master Karyawan</div>`;
+                    listDiv.classList.remove("hidden");
+                    clearProfileFields();
+                }
             });
 
-            select.onchange = function() {
-                const selectedName = this.value;
-                selectedStaffName = selectedName;
-                document.getElementById("calendarStaffName.innerText") = selectedName || "(Pilih Nama)";
-                
-                const found = MASTER_KARYAWAN.find(e => e.nama === selectedName);
-                if (found) {
-                    document.getElementById("valStore").innerText = found.store || "-";
-                    document.getElementById("valNik").innerText = found.nik || "-";
-                    document.getElementById("valExp").innerText = found.exp || "-";
-                    document.getElementById("valEmail").innerText = found.email || "-";
-                    document.getElementById("valPosition").innerText = found.position || "-";
-                    document.getElementById("valRh").innerText = found.rh || "-";
-                    document.getElementById("valAm").innerText = found.am || "-";
-                    document.getElementById("valTypeStore").innerText = found.typeStore || "-";
-                    document.getElementById("valTrainer").innerText = found.trainer || "-";
-                } else {
-                    document.getElementById("valStore").innerText = "-";
-                    document.getElementById("valNik").innerText = "-";
-                    document.getElementById("valExp").innerText = "-";
-                    document.getElementById("valEmail").innerText = "-";
-                    document.getElementById("valPosition").innerText = "-";
-                    document.getElementById("valRh").innerText = "-";
-                    document.getElementById("valAm").innerText = "-";
-                    document.getElementById("valTypeStore").innerText = "-";
-                    document.getElementById("valTrainer").innerText = "-";
+            document.addEventListener("click", function(e) {
+                if (!input.contains(e.target) && !listDiv.contains(e.target)) {
+                    listDiv.classList.add("hidden");
                 }
-                renderCalendar();
-            };
+            });
+        }
+
+        // Fungsi saat nama dari list diklik untuk mengisi otomatis seluruh field
+        window.selectEmployeeName = function(namaKaryawan) {
+            const input = document.getElementById("employeeSearch");
+            input.value = namaKaryawan;
+            selectedStaffName = namaKaryawan;
+            document.getElementById("calendarStaffName").innerText = namaKaryawan;
+            document.getElementById("autocompleteList").classList.add("hidden");
+
+            // Cari data lengkap karyawan berdasarkan nama
+            const emp = MASTER_KARYAWAN.find(e => e.nama.toLowerCase() === namaKaryawan.toLowerCase());
+            
+            if (emp) {
+                document.getElementById("valStore").innerText = emp.store || "-";
+                document.getElementById("valNik").innerText = emp.nik || "-";
+                document.getElementById("valExp").innerText = emp.exp || "-";
+                document.getElementById("valEmail").innerText = emp.email || "-";
+                document.getElementById("valPosition").innerText = emp.position || "-";
+                document.getElementById("valRh").innerText = emp.rh || "-";
+                document.getElementById("valAm").innerText = emp.am || "-";
+                document.getElementById("valTypeStore").innerText = emp.typeStore || "-";
+                document.getElementById("valTrainer").innerText = emp.trainer || "-";
+            } else {
+                clearProfileFields();
+            }
+
+            renderCalendar();
+        };
+
+        function clearProfileFields() {
+            document.getElementById("valStore").innerText = "-";
+            document.getElementById("valNik").innerText = "-";
+            document.getElementById("valExp").innerText = "-";
+            document.getElementById("valEmail").innerText = "-";
+            document.getElementById("valPosition").innerText = "-";
+            document.getElementById("valRh").innerText = "-";
+            document.getElementById("valAm").innerText = "-";
+            document.getElementById("valTypeStore").innerText = "-";
+            document.getElementById("valTrainer").innerText = "-";
         }
 
         // Form Submit Handler
         document.getElementById("submitForm").addEventListener("submit", function(e) {
             e.preventDefault();
-            const namaKaryawan = document.getElementById("employeeSelect").value;
+            const namaKaryawan = document.getElementById("employeeSearch").value.trim();
             if(!namaKaryawan) {
-                alert("Silakan pilih Nama Karyawan terlebih dahulu!");
+                alert("Silakan ketik Nama Karyawan terlebih dahulu!");
                 return;
             }
 
@@ -409,25 +427,19 @@
         function renderCalendar() {
             const grid = document.getElementById("calendarGrid");
             const monthLabel = document.getElementById("calendarMonthLabel");
-            const staffNameDisplay = document.getElementById("calendarStaffName");
-
-            staffNameDisplay.innerText = selectedStaffName ? selectedStaffName : "(Pilih Nama di Menu Submit / Rekap)";
 
             const year = currentCalendarDate.getFullYear();
             const month = currentCalendarDate.getMonth();
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
             monthLabel.innerText = `${monthNames[month]} ${year}`;
 
-            // Hitung hari awal dan jumlah hari
-            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; // Mulai Senin (0=Senin)
+            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; 
             const totalDays = new Date(year, month + 1, 0).getDate();
 
-            // Filter laporan untuk staff terpilih
-            const staffReports = GLOBAL_REPORTS.filter(r => !selectedStaffName || r.reporterName === selectedStaffName);
+            const staffReports = GLOBAL_REPORTS.filter(r => !selectedStaffName || r.reporterName.toLowerCase() === selectedStaffName.toLowerCase());
             const submittedDates = staffReports.map(r => r.date);
 
             let html = "";
-            // Padding hari kosong sebelum tanggal 1
             for (let i = 0; i < firstDayIndex; i++) {
                 html += `<div class="p-3 bg-slate-900/30 text-slate-700"></div>`;
             }
@@ -440,7 +452,6 @@
                 const isSubmitted = submittedDates.includes(dateStr);
                 const dotColor = isSubmitted ? "bg-emerald-500 shadow-emerald-500/50 shadow-sm" : "bg-rose-500/60";
                 
-                // Cari jumlah toko yang submit pada tanggal ini
                 const reportsOnThisDay = GLOBAL_REPORTS.filter(r => r.date === dateStr);
                 const storeCount = [...new Set(reportsOnThisDay.map(r => r.storeLocation))].length;
 
@@ -462,7 +473,6 @@
             renderCalendar();
         }
 
-        // RENDER TABEL REKAP & TOMBOL LIHAT TOKO
         function renderRekapTable() {
             const tbody = document.getElementById("rekapTableBody");
             if (!GLOBAL_REPORTS || GLOBAL_REPORTS.length === 0) {
@@ -490,7 +500,6 @@
             }).join("");
         }
 
-        // MODAL LIHAT TOKO / DETAIL HARI
         function openDayDetail(dateStr) {
             const reports = GLOBAL_REPORTS.filter(r => r.date === dateStr);
             const stores = [...new Set(reports.map(r => r.storeLocation))];
