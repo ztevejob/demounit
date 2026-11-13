@@ -11,9 +11,9 @@
 
     <div class="container mx-auto max-w-7xl space-y-6">
         
-        <!-- Header Navigasi Menu -->
+        <!-- Header Navigasi Menu (Judul bisa diklik rahasia untuk akses Admin) -->
         <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-md">
-            <h1 class="font-bold text-emerald-400 tracking-wider text-base sm:text-lg">📊 Portal Monitoring Demo Unit Digimap</h1>
+            <h1 onclick="triggerAdminModal()" class="font-bold text-emerald-400 tracking-wider text-base sm:text-lg cursor-pointer select-none hover:text-emerald-300 transition" title="Klik untuk akses Panel Admin">📊 Portal Monitoring Demo Unit Digimap</h1>
             <div class="flex gap-2">
                 <button onclick="switchTab('submit')" id="tabSubmitBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Menu Submit</button>
                 <button onclick="switchTab('rekap')" id="tabRekapBtn" class="bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Kalender & Rekap</button>
@@ -39,64 +39,69 @@
                         <h2 class="font-bold tracking-wider text-sm uppercase">Employee Profile</h2>
                     </div>
 
-                    <div class="p-6 overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <tbody class="divide-y divide-slate-700/60">
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400 w-1/3">Employee Name</td>
-                                    <td class="relative">
-                                        <input type="text" id="employeeSearch" placeholder="Ketik nama karyawan..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-purple-500 focus:outline-none" autocomplete="off">
-                                        <div id="autocompleteList" class="absolute left-0 right-0 bg-slate-900 border border-slate-700 rounded-lg mt-1 max-h-48 overflow-y-auto z-50 hidden shadow-2xl"></div>
-                                    </td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">Status Submit Hari Ini</td>
-                                    <td id="statusSubmit">
-                                        <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>
-                                    </td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">Bukti Screenshot</td>
-                                    <td id="valScreenshot" class="text-slate-300">-</td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">Store</td>
-                                    <td id="valStore" class="text-slate-300">-</td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">NIK</td>
-                                    <td id="valNik" class="text-slate-300">-</td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">Work Experience</td>
-                                    <td id="valExp" class="text-slate-300">-</td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">SEED Registered Email</td>
-                                    <td id="valEmail" class="text-slate-300">-</td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">Positions</td>
-                                    <td id="valPosition" class="text-slate-300">-</td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">RH</td>
-                                    <td id="valRh" class="text-slate-300">-</td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">AM</td>
-                                    <td id="valAm" class="text-slate-300">-</td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">Type Store</td>
-                                    <td id="valTypeStore" class="text-slate-300">-</td>
-                                </tr>
-                                <tr class="h-12">
-                                    <td class="font-semibold text-slate-400">Trainer HO</td>
-                                    <td id="valTrainer" class="text-slate-300">-</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="p-5 space-y-4">
+                        <!-- Baris Nama Karyawan -->
+                        <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Employee Name</label>
+                            <div class="relative">
+                                <input type="text" id="employeeSearch" placeholder="Ketik nama karyawan..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:ring-2 focus:ring-purple-500 focus:outline-none" autocomplete="off">
+                                <div id="autocompleteList" class="absolute left-0 right-0 bg-slate-900 border border-slate-700 rounded-lg mt-1 max-h-48 overflow-y-auto z-50 hidden shadow-2xl"></div>
+                            </div>
+                        </div>
+
+                        <!-- Grid Sejajar: Status Submit Hari Ini & Bukti Screenshot -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60">
+                            <div>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Status Submit Hari Ini</span>
+                                <div id="statusSubmit" class="py-1">
+                                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Bukti Screenshot</span>
+                                <div id="valScreenshot" class="text-slate-300 text-xs py-1 font-medium">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Grid Data Pendukung (2 Kolom Compact) -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Store</span>
+                                <span id="valStore" class="text-white font-medium truncate block">-</span>
+                            </div>
+                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">NIK</span>
+                                <span id="valNik" class="text-white font-medium">-</span>
+                            </div>
+                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Work Experience</span>
+                                <span id="valExp" class="text-white font-medium">-</span>
+                            </div>
+                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Positions</span>
+                                <span id="valPosition" class="text-white font-medium">-</span>
+                            </div>
+                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Type Store</span>
+                                <span id="valTypeStore" class="text-white font-medium">-</span>
+                            </div>
+                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Trainer HO</span>
+                                <span id="valTrainer" class="text-white font-medium">-</span>
+                            </div>
+                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">RH</span>
+                                <span id="valRh" class="text-white font-medium">-</span>
+                            </div>
+                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
+                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">AM</span>
+                                <span id="valAm" class="text-white font-medium">-</span>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50 text-xs">
+                            <span class="text-slate-400 block text-[10px] uppercase font-semibold">SEED Registered Email</span>
+                            <span id="valEmail" class="text-white font-medium">-</span>
+                        </div>
                     </div>
                 </div>
 
@@ -157,6 +162,15 @@
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Pilih Tanggal:</label>
                             <input type="date" id="submitDate" required class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Catatan / Kendala:</label>
+                            <select id="notesSelect" onchange="handleNotesSelectChange(this)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none mb-2">
+                                <option value="Unit Demo Aman & Berfungsi Normal">Unit Demo Aman & Berfungsi Normal (Default)</option>
+                                <option value="OTHER">Other (Tuliskan kendala lainnya...)</option>
+                            </select>
+                            <input type="text" id="notesOtherInput" placeholder="Tuliskan catatan/kendala lainnya..." class="hidden w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none">
                         </div>
 
                         <div>
@@ -225,7 +239,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700 pb-3">
                     <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Daftar Rekapitulasi Submit Toko</h3>
                     <div class="flex items-center gap-2">
-                        <select id="filterRekapMonth" onchange="renderRekapTable()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                        <select id="filterRekapMonth" onchange="renderRekapTable();" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none">
                             <option value="all">Semua Bulan</option>
                             <option value="01">Januari</option>
                             <option value="02">Februari</option>
@@ -278,6 +292,52 @@
         </div>
     </div>
 
+    <!-- MODAL ADMIN RAHASIA (Terbuka via klik judul & PIN) -->
+    <div id="adminModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-emerald-400 text-sm flex items-center gap-2"><span>🔐</span> Panel Admin & Draft WA Reminder Jumat (Mulai tgl 20)</h3>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+            
+            <!-- Form PIN -->
+            <div id="adminPinContainer" class="space-y-3">
+                <p class="text-xs text-slate-300">Masukkan PIN Admin untuk mengakses generator pesan WA:</p>
+                <div class="flex gap-2">
+                    <input type="password" id="adminPinInput" placeholder="Masukkan PIN Admin..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <button onclick="verifyAdminPin()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-4 py-2 rounded-lg font-medium transition shadow whitespace-nowrap">Buka 🔓</button>
+                </div>
+            </div>
+
+            <!-- Konten Draft WA (Tampil setelah PIN benar) -->
+            <div id="adminContentContainer" class="hidden space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-slate-400">Pilih Bulan Rekap:</span>
+                    <select id="filterAdminMonth" onchange="generateMonthlyWaTemplate()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        <option value="all">Semua Bulan</option>
+                        <option value="01">Januari</option>
+                        <option value="02">Februari</option>
+                        <option value="03">Maret</option>
+                        <option value="04">April</option>
+                        <option value="05">Mei</option>
+                        <option value="06">Juni</option>
+                        <option value="07">Juli</option>
+                        <option value="08">Agustus</option>
+                        <option value="09">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11" selected>November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                </div>
+                <textarea id="waTemplateText" rows="7" class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-none"></textarea>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button onclick="generateMonthlyWaTemplate()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">🔄 Refresh</button>
+                    <button onclick="copyWaTemplate()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">📋 Salin Pesan WA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Script Utama -->
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwbc9Bmz4Z69999E9ILcWgiLdcMQb1pbqFeVdHsTSv4Jxr30NIWc3N9O_bk2uF4M0QcRg/exec";
@@ -286,6 +346,7 @@
         let GLOBAL_REPORTS = [];
         let currentCalendarDate = new Date();
         let selectedStaffName = "";
+        let isAdminUnlocked = false;
 
         document.addEventListener("DOMContentLoaded", () => {
             const todayStr = new Date().toISOString().split('T')[0];
@@ -298,6 +359,134 @@
             const bar = document.getElementById("loadingBar");
             if (show) bar.classList.remove("hidden");
             else bar.classList.add("hidden");
+        }
+
+        // Trigger buka modal admin dari klik judul
+        function triggerAdminModal() {
+            document.getElementById("adminModal").classList.remove("hidden");
+            if (isAdminUnlocked) {
+                document.getElementById("adminPinContainer").classList.add("hidden");
+                document.getElementById("adminContentContainer").classList.remove("hidden");
+                generateMonthlyWaTemplate();
+            } else {
+                document.getElementById("adminPinContainer").classList.remove("hidden");
+                document.getElementById("adminContentContainer").classList.add("hidden");
+                document.getElementById("adminPinInput").value = "";
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById("adminModal").classList.add("hidden");
+        }
+
+        function verifyAdminPin() {
+            const pin = document.getElementById("adminPinInput").value.trim();
+            if (pin === "3333") {
+                isAdminUnlocked = true;
+                document.getElementById("adminPinContainer").classList.add("hidden");
+                document.getElementById("adminContentContainer").classList.remove("hidden");
+                generateMonthlyWaTemplate();
+            } else {
+                alert("PIN Admin salah!");
+                document.getElementById("adminPinInput").value = "";
+            }
+        }
+
+        // Generator WA Khusus Hitung Hari Jumat Mulai Tanggal 20 ke Atas
+        function generateMonthlyWaTemplate() {
+            const filterMonth = document.getElementById("filterAdminMonth").value;
+            const fullMonthNames = {
+                "01": "Januari", "02": "Februari", "03": "Maret", "04": "April",
+                "05": "Mei", "06": "Juni", "07": "Juli", "08": "Agustus",
+                "09": "September", "10": "Oktober", "11": "November", "12": "Desember", "all": "Periode Ini"
+            };
+
+            const monthName = fullMonthNames[filterMonth] || "Bulan Ini";
+            const allStores = [...new Set(MASTER_KARYAWAN.map(e => e.store).filter(s => s && s !== "-"))].sort();
+
+            const today = new Date();
+            const year = today.getFullYear();
+            let targetMonthIndex = filterMonth === "all" ? today.getMonth() : parseInt(filterMonth) - 1;
+            
+            // Cari semua tanggal Jumat di bulan tersebut, mulai dari tanggal 20 ke atas yang sudah terlewati/berjalan
+            let fridayDates = [];
+            let date = new Date(year, targetMonthIndex, 1);
+            while (date.getMonth() === targetMonthIndex) {
+                if (date.getDay() === 5) { // Hari Jumat
+                    const dayNum = date.getDate();
+                    if (dayNum >= 20 && date <= today) {
+                        const yyyy = date.getFullYear();
+                        const mm = String(date.getMonth() + 1).padStart(2, '0');
+                        const dd = String(dayNum).padStart(2, '0');
+                        fridayDates.push(`${yyyy}-${mm}-${dd}`);
+                    }
+                }
+                date.setDate(date.getDate() + 1);
+            }
+
+            let monthlyReports = GLOBAL_REPORTS;
+            if (filterMonth !== "all") {
+                monthlyReports = GLOBAL_REPORTS.filter(r => {
+                    if (!r.date) return false;
+                    const parts = String(r.date).split("-");
+                    return parts.length >= 2 && parts[1] === filterMonth;
+                });
+            }
+
+            let storeSubmittedDates = {};
+            monthlyReports.forEach(r => {
+                if (r.storeLocation && r.date) {
+                    if (!storeSubmittedDates[r.storeLocation]) {
+                        storeSubmittedDates[r.storeLocation] = new Set();
+                    }
+                    storeSubmittedDates[r.storeLocation].add(r.date);
+                }
+            });
+
+            let storeUnsubmittedDetails = [];
+            allStores.forEach((store, index) => {
+                const submittedSet = storeSubmittedDates[store] || new Set();
+                const missingFridays = fridayDates.filter(fDate => !submittedSet.has(fDate));
+
+                if (missingFridays.length > 0) {
+                    const missingDaysStr = missingFridays.map(f => f.split("-")[2]).join(", tgl ");
+                    storeUnsubmittedDetails.push(`${index + 1}. ${store} - Belum laporan pada tgl ${missingDaysStr}`);
+                }
+            });
+
+            let storeListText = "";
+            if (fridayDates.length === 0) {
+                storeListText = "ℹ️ Belum ada jadwal hari Jumat mulai tanggal 20 ke atas yang terlewati pada periode ini.";
+            } else if (storeUnsubmittedDetails.length === 0) {
+                storeListText = "✅ Semua store sudah lengkap melakukan laporan di setiap hari Jumat (mulai tgl 20) yang telah berjalan pada periode ini.";
+            } else {
+                storeListText = storeUnsubmittedDetails.join("\n");
+            }
+
+            const template = `Halo Rekan-Rekan Store Digimap 👋,
+
+Mengingatkan untuk pengisian laporan wajib Demo Unit Digimap setiap hari Jumat periode *${monthName}* (Mulai perhitungan tanggal 20). Berdasarkan monitoring portal, berikut daftar store beserta tanggal Jumat yang belum tercatat laporannya:
+
+${storeListText}
+
+Mohon segera koordinasikan PIC Store masing-masing untuk melengkapi laporan demo unit pada tanggal tersebut.
+
+Terima kasih atas kerjasamanya! Semangat 🔥.`;
+
+            document.getElementById("waTemplateText").value = template;
+        }
+
+        function handleNotesSelectChange(select) {
+            const otherInput = document.getElementById("notesOtherInput");
+            if (select.value === "OTHER") {
+                otherInput.classList.remove("hidden");
+                otherInput.required = true;
+                otherInput.focus();
+            } else {
+                otherInput.classList.add("hidden");
+                otherInput.required = false;
+                otherInput.value = "";
+            }
         }
 
         function switchTab(tab) {
@@ -343,7 +532,6 @@
                 });
         }
 
-        // Setup Pencarian Nama Karyawan & Auto-Fill Profil
         function setupEmployeeSearch() {
             const input = document.getElementById("employeeSearch");
             const listDiv = document.getElementById("autocompleteList");
@@ -387,14 +575,12 @@
             });
         }
 
-        // Fungsi saat nama dari list diklik
         window.selectEmployeeName = function(namaKaryawan) {
             const input = document.getElementById("employeeSearch");
             input.value = namaKaryawan;
             selectedStaffName = namaKaryawan.trim();
             document.getElementById("autocompleteList").classList.add("hidden");
 
-            // 1. Ambil data profil dari Master Karyawan
             const emp = MASTER_KARYAWAN.find(e => e.nama && e.nama.trim().toLowerCase() === selectedStaffName.toLowerCase());
             
             if (emp) {
@@ -411,13 +597,11 @@
                 clearProfileFields();
             }
 
-            // 2. Cek Status Submit & Update Ringkasan Staff
             checkSubmissionStatus();
             renderStaffSummary();
             renderCalendar();
         };
 
-        // Fungsi untuk mencocokkan nama dengan sheet Submit
         function checkSubmissionStatus() {
             const nama = document.getElementById("employeeSearch").value.trim().toLowerCase();
             const statusEl = document.getElementById("statusSubmit");
@@ -438,7 +622,7 @@
             if (matchReport) {
                 statusEl.innerHTML = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">✅ Sudah Submit</span>`;
                 if (matchReport.fileUrl) {
-                    fotoEl.innerHTML = `<a href="${matchReport.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">🖼️ Lihat Foto (Kolom F)</a>`;
+                    fotoEl.innerHTML = `<a href="${matchReport.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">🖼️ Lihat Foto</a>`;
                 } else {
                     fotoEl.innerHTML = `<span class="text-slate-400">Terdata (Tanpa Foto)</span>`;
                 }
@@ -448,7 +632,6 @@
             }
         }
 
-        // Render Ringkasan Submit untuk Staff Terpilih dengan Filter Bulan (100% Fix)
         function renderStaffSummary() {
             const tbody = document.getElementById("staffSummaryTableBody");
             const titleSpan = document.getElementById("summaryStaffName");
@@ -465,14 +648,12 @@
             titleSpan.innerText = `Staff: ${activeName}`;
             const targetName = activeName.toLowerCase().replace(/\s+/g, ' ');
             
-            // Filter berdasarkan nama staff
             let staffReports = GLOBAL_REPORTS.filter(r => {
                 if (!r.reporterName) return false;
                 const cleanReporter = String(r.reporterName).trim().toLowerCase().replace(/\s+/g, ' ');
                 return cleanReporter === targetName;
             });
 
-            // Filter berdasarkan bulan dari tanggal transaksi (Kolom B / r.date format YYYY-MM-DD)
             if (filterMonth !== "all") {
                 staffReports = staffReports.filter(r => {
                     if (!r.date) return false;
@@ -508,9 +689,17 @@
             document.getElementById("valAm").innerText = "-";
             document.getElementById("valTypeStore").innerText = "-";
             document.getElementById("valTrainer").innerText = "-";
+            document.getElementById("valScreenshot").innerText = "-";
         }
 
-        // Form Submit Handler
+        function copyWaTemplate() {
+            const textarea = document.getElementById("waTemplateText");
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(textarea.value);
+            alert("Draft pesan WA bulanan berhasil disalin ke clipboard!");
+        }
+
         document.getElementById("submitForm").addEventListener("submit", function(e) {
             e.preventDefault();
             const namaKaryawan = document.getElementById("employeeSearch").value.trim();
@@ -519,9 +708,13 @@
                 return;
             }
 
+            const selectNotes = document.getElementById("notesSelect").value;
+            const otherNotes = document.getElementById("notesOtherInput").value.trim();
+            const finalNotes = selectNotes === "OTHER" ? (otherNotes || "Lainnya") : selectNotes;
+
             const fileInput = document.getElementById("photoFile");
             const file = fileInput.files[0];
-            const MAX_SIZE = 2 * 1024 * 1024; // 2MB
+            const MAX_SIZE = 2 * 1024 * 1024;
             if (file && file.size > MAX_SIZE) {
                 alert("Ukuran screenshot terlalu besar! Maksimal 2 MB.");
                 return;
@@ -538,7 +731,7 @@
                     date: document.getElementById("submitDate").value,
                     reporterName: namaKaryawan,
                     storeLocation: document.getElementById("valStore").innerText,
-                    notes: "NIK: " + document.getElementById("valNik").innerText,
+                    notes: finalNotes + " | NIK: " + document.getElementById("valNik").innerText,
                     fileData: event.target.result,
                     fileName: file.name || "screenshot.jpg",
                     mimeType: file.type || "image/jpeg"
@@ -555,6 +748,7 @@
                         alert("Data dan screenshot berhasil disubmit!");
                         document.getElementById("submitForm").reset();
                         document.getElementById("submitDate").value = new Date().toISOString().split('T')[0];
+                        document.getElementById("notesOtherInput").classList.add("hidden");
                         fetchAllData();
                     } else {
                         alert("Gagal dari Server: " + (response.message || "Unknown error"));
@@ -573,7 +767,6 @@
             reader.readAsDataURL(file);
         });
 
-        // RENDER KALENDER AKTIVITAS SUBMIT (Murni membaca Kolom B Tanggal Laporan)
         function renderCalendar() {
             const grid = document.getElementById("calendarGrid");
             const monthLabel = document.getElementById("calendarMonthLabel");
@@ -590,7 +783,6 @@
             const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7; 
             const totalDays = new Date(year, month + 1, 0).getDate();
 
-            // Filter laporan berdasarkan staff terpilih dan membaca kolom B (r.date)
             const activeSearchName = document.getElementById("employeeSearch").value.trim().toLowerCase().replace(/\s+/g, ' ');
             const staffReports = GLOBAL_REPORTS.filter(r => !activeSearchName || (r.reporterName && String(r.reporterName).trim().toLowerCase().replace(/\s+/g, ' ') === activeSearchName));
             const submittedDates = staffReports.map(r => r.date);
@@ -629,14 +821,12 @@
             renderCalendar();
         }
 
-        // Render Tabel Rekapitulasi dengan Filter Bulan
         function renderRekapTable() {
             const tbody = document.getElementById("rekapTableBody");
             const filterMonth = document.getElementById("filterRekapMonth").value;
 
             let filteredReports = GLOBAL_REPORTS;
 
-            // Filter berdasarkan bulan dari tanggal transaksi (Kolom B / r.date)
             if (filterMonth !== "all") {
                 filteredReports = GLOBAL_REPORTS.filter(r => {
                     if (!r.date) return false;
