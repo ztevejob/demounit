@@ -3,26 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Profile, Submit & Kalender - Digimap</title>
+    <title>Employee Profile, Submit, Galeri & Kalender - Digimap</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes shimmerStripe {
+            0% { background-position: 0 0; }
+            100% { background-position: 32px 0; }
+        }
+        .power-stripes {
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.22) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.22) 50%,
+                rgba(255, 255, 255, 0.22) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 32px 32px;
+            animation: shimmerStripe 1.4s linear infinite;
+        }
+    </style>
 </head>
-<body class="bg-slate-900 text-gray-100 font-sans p-4 sm:p-6">
+<body class="min-h-screen bg-gradient-to-br from-lime-950/60 via-emerald-900/60 to-teal-950 text-emerald-50 font-sans p-4 sm:p-6">
 
     <div class="container mx-auto max-w-7xl space-y-6">
         
         <!-- Header Navigasi Menu (Judul bisa diklik rahasia untuk akses Admin) -->
-        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-md">
-            <h1 onclick="triggerAdminModal()" class="font-bold text-emerald-400 tracking-wider text-base sm:text-lg cursor-pointer select-none hover:text-emerald-300 transition" title="Klik untuk akses Panel Admin">📊 Portal Monitoring Demo Unit Digimap</h1>
-            <div class="flex gap-2">
-                <button onclick="switchTab('submit')" id="tabSubmitBtn" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Menu Submit</button>
-                <button onclick="switchTab('rekap')" id="tabRekapBtn" class="bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Kalender & Rekap</button>
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-gradient-to-r from-lime-500/20 via-emerald-500/20 to-teal-500/25 backdrop-blur-md p-4 rounded-2xl border border-emerald-400/40 shadow-lg shadow-emerald-950/40">
+            <h1 onclick="triggerAdminModal()" class="font-bold bg-gradient-to-r from-lime-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent tracking-wider text-base sm:text-lg cursor-pointer select-none hover:opacity-85 transition" title="Klik untuk akses Panel Admin">📊 Portal Monitoring Demo Unit Digimap</h1>
+            <div class="flex flex-wrap justify-center gap-2">
+                <button onclick="switchTab('submit')" id="tabSubmitBtn" class="bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 text-emerald-950 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-emerald-500/25 transition">Menu Submit</button>
+                <button onclick="switchTab('rekap')" id="tabRekapBtn" class="bg-emerald-900/50 text-emerald-100 hover:bg-emerald-800/60 border border-emerald-400/30 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">Kalender & Rekap</button>
+                <button onclick="switchTab('galeri')" id="tabGaleriBtn" class="bg-emerald-900/50 text-emerald-100 hover:bg-emerald-800/60 border border-emerald-400/30 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">🖼️ Galeri Foto</button>
             </div>
         </div>
 
         <!-- LOADING GAUGE BAR -->
-        <div id="loadingBar" class="hidden w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
-            <div class="bg-emerald-500 h-full progress-animate w-3/4 animate-pulse"></div>
+        <div id="loadingBar" class="hidden w-full bg-emerald-950/80 rounded-full h-2.5 overflow-hidden border border-emerald-400/30">
+            <div class="bg-gradient-to-r from-lime-300 via-emerald-400 to-teal-300 h-full progress-animate w-3/4 animate-pulse"></div>
         </div>
 
         <!-- === VIEW 1: MENU SUBMIT & PROFILE === -->
@@ -31,91 +52,91 @@
             <!-- KOLOM KIRI: EMPLOYEE PROFILE & RINGKASAN SUBMIT -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Employee Profile Card -->
-                <div class="bg-slate-800 shadow-lg rounded-2xl overflow-hidden border border-slate-700">
-                    <div class="bg-purple-700 text-white px-6 py-4 flex items-center gap-3">
+                <div class="bg-gradient-to-br from-emerald-900/45 via-teal-900/35 to-lime-900/25 backdrop-blur-md shadow-xl rounded-2xl overflow-hidden border border-emerald-400/35">
+                    <div class="bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 text-emerald-950 px-6 py-4 flex items-center gap-3 shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                           <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                         </svg>
-                        <h2 class="font-bold tracking-wider text-sm uppercase">Employee Profile</h2>
+                        <h2 class="font-extrabold tracking-wider text-sm uppercase">Employee Profile</h2>
                     </div>
 
                     <div class="p-5 space-y-4">
                         <!-- Baris Nama Karyawan -->
-                        <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60">
-                            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Employee Name</label>
+                        <div class="bg-emerald-950/50 p-3.5 rounded-xl border border-emerald-400/25">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-lime-200/80 mb-1">Employee Name</label>
                             <div class="relative">
-                                <input type="text" id="employeeSearch" placeholder="Ketik nama karyawan..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:ring-2 focus:ring-purple-500 focus:outline-none" autocomplete="off">
-                                <div id="autocompleteList" class="absolute left-0 right-0 bg-slate-900 border border-slate-700 rounded-lg mt-1 max-h-48 overflow-y-auto z-50 hidden shadow-2xl"></div>
+                                <input type="text" id="employeeSearch" placeholder="Ketik nama karyawan..." class="w-full bg-emerald-950/90 border border-emerald-400/35 rounded-lg px-3 py-2 text-xs text-white placeholder-emerald-300/50 focus:ring-2 focus:ring-lime-300 focus:outline-none" autocomplete="off">
+                                <div id="autocompleteList" class="absolute left-0 right-0 bg-emerald-950 border border-emerald-400/40 rounded-lg mt-1 max-h-48 overflow-y-auto z-50 hidden shadow-2xl"></div>
                             </div>
                         </div>
 
                         <!-- Grid Sejajar: Status Submit Hari Ini & Bukti Screenshot -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-emerald-950/50 p-3.5 rounded-xl border border-emerald-400/25">
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Status Submit Hari Ini</span>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-lime-200/80 mb-1">Status Submit Hari Ini</span>
                                 <div id="statusSubmit" class="py-1">
-                                    <span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>
+                                    <span class="bg-amber-400/20 text-amber-200 border border-amber-300/40 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>
                                 </div>
-                                <div id="lastSubmitHint" class="text-[10px] text-slate-400 mt-1"></div>
+                                <div id="lastSubmitHint" class="text-[10px] text-emerald-200/70 mt-1"></div>
                             </div>
                             <div>
-                                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Bukti Screenshot</span>
-                                <div id="valScreenshot" class="text-slate-300 text-xs py-1 font-medium">-</div>
+                                <span class="block text-[10px] font-bold uppercase tracking-wider text-lime-200/80 mb-1">Bukti Screenshot</span>
+                                <div id="valScreenshot" class="text-emerald-100 text-xs py-1 font-medium">-</div>
                             </div>
                         </div>
 
                         <!-- Grid Data Pendukung (2 Kolom Compact) -->
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Store</span>
+                            <div class="bg-emerald-950/45 p-2.5 rounded-xl border border-emerald-400/20">
+                                <span class="text-lime-200/75 block text-[10px] uppercase font-semibold">Store</span>
                                 <span id="valStore" class="text-white font-medium truncate block">-</span>
                             </div>
-                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">NIK</span>
+                            <div class="bg-emerald-950/45 p-2.5 rounded-xl border border-emerald-400/20">
+                                <span class="text-lime-200/75 block text-[10px] uppercase font-semibold">NIK</span>
                                 <span id="valNik" class="text-white font-medium">-</span>
                             </div>
-                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Work Experience</span>
+                            <div class="bg-emerald-950/45 p-2.5 rounded-xl border border-emerald-400/20">
+                                <span class="text-lime-200/75 block text-[10px] uppercase font-semibold">Work Experience</span>
                                 <span id="valExp" class="text-white font-medium">-</span>
                             </div>
-                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Positions</span>
+                            <div class="bg-emerald-950/45 p-2.5 rounded-xl border border-emerald-400/20">
+                                <span class="text-lime-200/75 block text-[10px] uppercase font-semibold">Positions</span>
                                 <span id="valPosition" class="text-white font-medium">-</span>
                             </div>
-                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Type Store</span>
+                            <div class="bg-emerald-950/45 p-2.5 rounded-xl border border-emerald-400/20">
+                                <span class="text-lime-200/75 block text-[10px] uppercase font-semibold">Type Store</span>
                                 <span id="valTypeStore" class="text-white font-medium">-</span>
                             </div>
-                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">Trainer HO</span>
+                            <div class="bg-emerald-950/45 p-2.5 rounded-xl border border-emerald-400/20">
+                                <span class="text-lime-200/75 block text-[10px] uppercase font-semibold">Trainer HO</span>
                                 <span id="valTrainer" class="text-white font-medium">-</span>
                             </div>
-                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">RH</span>
+                            <div class="bg-emerald-950/45 p-2.5 rounded-xl border border-emerald-400/20">
+                                <span class="text-lime-200/75 block text-[10px] uppercase font-semibold">RH</span>
                                 <span id="valRh" class="text-white font-medium">-</span>
                             </div>
-                            <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50">
-                                <span class="text-slate-400 block text-[10px] uppercase font-semibold">AM</span>
+                            <div class="bg-emerald-950/45 p-2.5 rounded-xl border border-emerald-400/20">
+                                <span class="text-lime-200/75 block text-[10px] uppercase font-semibold">AM</span>
                                 <span id="valAm" class="text-white font-medium">-</span>
                             </div>
                         </div>
-                        <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-700/50 text-xs">
-                            <span class="text-slate-400 block text-[10px] uppercase font-semibold">SEED Registered Email</span>
+                        <div class="bg-emerald-950/45 p-2.5 rounded-xl border border-emerald-400/20 text-xs">
+                            <span class="text-lime-200/75 block text-[10px] uppercase font-semibold">SEED Registered Email</span>
                             <span id="valEmail" class="text-white font-medium">-</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Ringkasan Submit Staff Terpilih -->
-                <div class="bg-slate-800 shadow-lg rounded-2xl p-6 border border-slate-700 space-y-4">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700 pb-3">
+                <div class="bg-gradient-to-br from-emerald-900/45 via-teal-900/35 to-lime-900/25 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-emerald-400/35 space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-emerald-400/25 pb-3">
                         <div>
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Ringkasan Submit Staff Terpilih</h3>
-                            <span id="summaryStaffName" class="text-xs text-slate-400">(Belum ada staff dipilih)</span>
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-lime-200">📋 Ringkasan Submit Staff Terpilih</h3>
+                            <span id="summaryStaffName" class="text-xs text-emerald-200/75">(Belum ada staff dipilih)</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs text-slate-400">Filter Bulan:</span>
-                            <select id="filterStaffMonth" onchange="renderStaffSummary()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            <span class="text-xs text-emerald-200/80">Filter Bulan:</span>
+                            <select id="filterStaffMonth" onchange="renderStaffSummary()" class="bg-emerald-950 border border-emerald-400/35 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-lime-300 focus:outline-none">
                                 <option value="all">Semua Bulan</option>
                                 <option value="01">Januari</option>
                                 <option value="02">Februari</option>
@@ -135,47 +156,47 @@
 
                     <!-- Kartu Ringkasan Status Bulanan Staff -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                        <div class="bg-slate-900/70 p-3 rounded-xl border border-slate-700/70 space-y-1.5">
+                        <div class="bg-emerald-950/55 p-3 rounded-xl border border-emerald-400/25 space-y-1.5">
                             <div class="flex justify-between items-center">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Capaian Jumat</span>
-                                <span id="metricFridayPct" class="text-[11px] font-bold text-emerald-400">0%</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-lime-200/80">Capaian Jumat</span>
+                                <span id="metricFridayPct" class="text-[11px] font-bold text-lime-300">0%</span>
                             </div>
                             <div id="metricFridayValue" class="text-sm font-bold text-white">-</div>
-                            <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                                <div id="metricFridayBar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+                            <div class="w-full bg-emerald-950 rounded-full h-2 overflow-hidden border border-emerald-400/20">
+                                <div id="metricFridayBar" class="bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-300 h-full transition-all duration-300" style="width: 0%"></div>
                             </div>
                         </div>
 
-                        <div class="bg-slate-900/70 p-3 rounded-xl border border-slate-700/70 space-y-1">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Jumat Terakhir</span>
+                        <div class="bg-emerald-950/55 p-3 rounded-xl border border-emerald-400/25 space-y-1">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-lime-200/80">Jumat Terakhir</span>
                             <div id="metricLastFridayBadge" class="pt-0.5">
-                                <span class="text-slate-400 font-medium">-</span>
+                                <span class="text-emerald-200/70 font-medium">-</span>
                             </div>
-                            <div id="metricLastFridayDate" class="text-[10px] text-slate-400">Pilih staff untuk melihat status</div>
+                            <div id="metricLastFridayDate" class="text-[10px] text-emerald-200/70">Pilih staff untuk melihat status</div>
                         </div>
 
-                        <div class="bg-slate-900/70 p-3 rounded-xl border border-slate-700/70 space-y-1">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Submit & Kendala Bulan Ini</span>
+                        <div class="bg-emerald-950/55 p-3 rounded-xl border border-emerald-400/25 space-y-1">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-lime-200/80">Submit & Kendala Bulan Ini</span>
                             <div id="metricMonthTotal" class="text-sm font-bold text-white">0 Laporan</div>
-                            <div id="metricIssueCount" class="text-[10px] text-slate-400">0 catatan kendala</div>
+                            <div id="metricIssueCount" class="text-[10px] text-emerald-200/70">0 catatan kendala</div>
                         </div>
                     </div>
 
                     <!-- Checklist Jadwal Jumat Bulanan -->
-                    <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700/60 space-y-2">
+                    <div class="bg-emerald-950/45 p-3 rounded-xl border border-emerald-400/20 space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Jadwal Jumat Bulanan (Klik chip untuk lihat detail)</span>
-                            <span id="fridayLegendHint" class="text-[10px] text-slate-500">Rutin tiap Jumat</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-lime-200/80">Jadwal Jumat Bulanan (Klik chip untuk lihat detail)</span>
+                            <span id="fridayLegendHint" class="text-[10px] text-emerald-300/75">Rutin tiap Jumat</span>
                         </div>
                         <div id="fridayChecklistChips" class="flex flex-wrap gap-2">
-                            <span class="text-xs text-slate-500">Pilih staff untuk menampilkan checklist Jumat.</span>
+                            <span class="text-xs text-emerald-200/70">Pilih staff untuk menampilkan checklist Jumat.</span>
                         </div>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
-                                <tr class="bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-700">
+                                <tr class="bg-emerald-950/80 text-lime-200 uppercase text-[10px] tracking-wider border-b border-emerald-400/25">
                                     <th class="p-3">Tanggal Laporan</th>
                                     <th class="p-3">Store / Cabang</th>
                                     <th class="p-3">Status Unit</th>
@@ -183,8 +204,8 @@
                                     <th class="p-3 text-center">Bukti Foto</th>
                                 </tr>
                             </thead>
-                            <tbody id="staffSummaryTableBody" class="divide-y divide-slate-700/50 text-slate-300">
-                                <tr><td colspan="5" class="p-4 text-center text-slate-500">Silakan ketik dan pilih nama karyawan di atas.</td></tr>
+                            <tbody id="staffSummaryTableBody" class="divide-y divide-emerald-400/15 text-emerald-50">
+                                <tr><td colspan="5" class="p-4 text-center text-emerald-200/70">Silakan ketik dan pilih nama karyawan di atas.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -194,44 +215,44 @@
             <!-- KOLOM KANAN: MENU SUBMIT & INFORMASI -->
             <div class="space-y-6">
                 <!-- Card Menu Submit -->
-                <div class="bg-slate-800 shadow-lg rounded-2xl p-6 border border-slate-700">
-                    <div class="flex items-center gap-2 text-purple-400 font-bold mb-4 border-b border-slate-700 pb-3">
+                <div class="bg-gradient-to-br from-emerald-900/45 via-teal-900/35 to-lime-900/25 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-emerald-400/35">
+                    <div class="flex items-center gap-2 text-lime-200 font-bold mb-4 border-b border-emerald-400/25 pb-3">
                         <span class="text-lg">📥</span>
                         <h3 class="text-sm uppercase tracking-wide">Menu Submit</h3>
                     </div>
 
                     <form id="submitForm" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Pilih Tanggal:</label>
-                            <input type="date" id="submitDate" required class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-lime-200/80 mb-1">Pilih Tanggal:</label>
+                            <input type="date" id="submitDate" required class="w-full bg-emerald-950/90 border border-emerald-400/35 text-white rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-lime-300 focus:outline-none">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Catatan / Kendala:</label>
-                            <select id="notesSelect" onchange="handleNotesSelectChange(this)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none mb-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-lime-200/80 mb-1">Catatan / Kendala:</label>
+                            <select id="notesSelect" onchange="handleNotesSelectChange(this)" class="w-full bg-emerald-950/90 border border-emerald-400/35 text-white rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-lime-300 focus:outline-none mb-2">
                                 <option value="Unit Demo Aman & Berfungsi Normal">Unit Demo Aman & Berfungsi Normal (Default)</option>
                                 <option value="OTHER">Other (Tuliskan kendala lainnya...)</option>
                             </select>
-                            <input type="text" id="notesOtherInput" placeholder="Tuliskan catatan/kendala lainnya..." class="hidden w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            <input type="text" id="notesOtherInput" placeholder="Tuliskan catatan/kendala lainnya..." class="hidden w-full bg-emerald-950/90 border border-emerald-400/35 text-white rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-lime-300 focus:outline-none">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Upload Screenshot (Maks 2 MB):</label>
-                            <input type="file" id="photoFile" accept="image/*" required class="w-full bg-slate-900 border border-slate-700 text-slate-300 rounded-lg p-2 text-xs file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-purple-900 file:text-purple-200 hover:file:bg-purple-800">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-lime-200/80 mb-1">Upload Screenshot (Maks 2 MB):</label>
+                            <input type="file" id="photoFile" accept="image/*" required class="w-full bg-emerald-950/90 border border-emerald-400/35 text-emerald-100 rounded-lg p-2 text-xs file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-gradient-to-r file:from-lime-400 file:to-emerald-400 file:text-emerald-950 hover:opacity-90">
                         </div>
 
-                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition text-sm shadow-md">
-                            Submit
+                        <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 hover:from-lime-300 hover:to-teal-300 text-emerald-950 font-bold py-2.5 rounded-xl transition text-sm shadow-lg shadow-emerald-500/25">
+                            Submit Laporan
                         </button>
                     </form>
                 </div>
 
                 <!-- Informasi Rutin Setiap Jumat -->
-                <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-5 text-xs text-emerald-300 flex items-center gap-3 shadow-inner">
+                <div class="bg-gradient-to-br from-lime-400/15 via-emerald-500/15 to-teal-500/15 border border-lime-300/35 rounded-2xl p-5 text-xs text-emerald-100 flex items-center gap-3 shadow-inner">
                     <span class="text-2xl">📅</span>
                     <div>
-                        <span class="font-bold block uppercase tracking-wider text-emerald-400 mb-0.5">Ketentuan Pelaporan:</span>
-                        Rutin dilakukan setiap hari Jumat. Pastikan data dan screenshot diunggah dengan benar.
+                        <span class="font-bold block uppercase tracking-wider text-lime-200 mb-0.5">Ketentuan Pelaporan:</span>
+                        Rutin dilakukan setiap hari Jumat. Power gauge rekap toko otomatis reset setiap Jumat baru sesuai kalender.
                     </div>
                 </div>
 
@@ -242,49 +263,49 @@
         <div id="viewRekap" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             <!-- KALENDER AKTIVITAS SUBMIT -->
-            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-5">
+            <div class="bg-gradient-to-br from-emerald-900/45 via-teal-900/35 to-lime-900/25 backdrop-blur-md border border-emerald-400/35 rounded-2xl p-6 shadow-xl space-y-5">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div class="flex items-center gap-2 text-emerald-400 font-bold uppercase text-sm tracking-wider">
+                    <div class="flex items-center gap-2 text-lime-200 font-bold uppercase text-sm tracking-wider">
                         <span>📅</span> Kalender Aktivitas Submit (<span id="calendarMonthTitle">Nov 2026</span>)
                     </div>
-                    <div class="flex items-center gap-3 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-700">
+                    <div class="flex items-center gap-3 bg-emerald-950/90 px-3 py-1.5 rounded-xl border border-emerald-400/35">
                         <span id="calendarMonthLabel" class="text-xs font-bold text-white">Nov 2026</span>
                         <div class="flex gap-1">
-                            <button onclick="changeMonth(-1)" class="text-slate-400 hover:text-white px-1.5 text-xs bg-slate-800 rounded">◀</button>
-                            <button onclick="changeMonth(1)" class="text-slate-400 hover:text-white px-1.5 text-xs bg-slate-800 rounded">▶</button>
+                            <button onclick="changeMonth(-1)" class="text-lime-200 hover:text-white px-1.5 text-xs bg-emerald-900 rounded">◀</button>
+                            <button onclick="changeMonth(1)" class="text-lime-200 hover:text-white px-1.5 text-xs bg-emerald-900 rounded">▶</button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Indikator Status & Ringkasan Jumat Bulan Kalender -->
-                <div class="bg-slate-900/80 border border-slate-700 p-3 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs">
+                <div class="bg-emerald-950/55 border border-emerald-400/25 p-3 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs">
                     <div>
-                        <span class="text-slate-400 font-medium block">Status Aktivitas Bulanan</span>
-                        <span id="calendarFridaySummary" class="text-[11px] text-emerald-400 font-semibold">Memuat jadwal Jumat...</span>
+                        <span class="text-lime-200/80 font-medium block">Status Aktivitas Bulanan</span>
+                        <span id="calendarFridaySummary" class="text-[11px] text-lime-200 font-semibold">Memuat jadwal Jumat...</span>
                     </div>
                     <div class="flex items-center gap-4 text-xs font-semibold">
-                        <span class="flex items-center gap-1.5 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Submitted</span>
+                        <span class="flex items-center gap-1.5 text-lime-300"><span class="w-2.5 h-2.5 rounded-full bg-lime-400 inline-block"></span> Submitted</span>
                         <span class="flex items-center gap-1.5 text-rose-400"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Belum</span>
                     </div>
                 </div>
 
                 <!-- Grid Kalender (Sen - Min) -->
-                <div class="bg-slate-900/60 border border-slate-700 rounded-xl overflow-hidden">
-                    <div class="grid grid-cols-7 text-center font-bold text-xs text-slate-400 bg-slate-900 py-3 border-b border-slate-700">
-                        <div>Sen</div><div>Sel</div><div>Rbu</div><div>Kam</div><div class="text-emerald-400">Jum</div><div>Sab</div><div>Min</div>
+                <div class="bg-emerald-950/65 border border-emerald-400/25 rounded-xl overflow-hidden">
+                    <div class="grid grid-cols-7 text-center font-bold text-xs text-lime-200/85 bg-emerald-950 py-3 border-b border-emerald-400/25">
+                        <div>Sen</div><div>Sel</div><div>Rbu</div><div>Kam</div><div class="text-lime-300">Jum</div><div>Sab</div><div>Min</div>
                     </div>
-                    <div id="calendarGrid" class="grid grid-cols-7 text-center text-xs divide-x divide-y divide-slate-800 min-h-[220px]">
+                    <div id="calendarGrid" class="grid grid-cols-7 text-center text-xs divide-x divide-y divide-emerald-400/15 min-h-[220px]">
                         <!-- Render Otomatis via JS -->
                     </div>
                 </div>
             </div>
 
-            <!-- DAFTAR REKAPITULASI SUBMIT TOKO -->
-            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl space-y-4">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-700 pb-3">
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-400">📋 Daftar Rekapitulasi Submit Toko</h3>
+            <!-- DAFTAR REKAPITULASI SUBMIT TOKO + POWER GAUGE BAR -->
+            <div class="bg-gradient-to-br from-emerald-900/45 via-teal-900/35 to-lime-900/25 backdrop-blur-md border border-emerald-400/35 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-emerald-400/25 pb-3">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-lime-200">📋 Daftar Rekapitulasi Submit Toko</h3>
                     <div class="flex items-center gap-2">
-                        <select id="filterRekapMonth" onchange="renderRekapTable();" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                        <select id="filterRekapMonth" onchange="renderRekapTable();" class="bg-emerald-950 border border-emerald-400/35 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-lime-300 focus:outline-none">
                             <option value="all">Semua Bulan</option>
                             <option value="01">Januari</option>
                             <option value="02">Februari</option>
@@ -299,12 +320,47 @@
                             <option value="11" selected>November</option>
                             <option value="12">Desember</option>
                         </select>
-                        <button onclick="fetchAllData()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-2.5 py-1.5 rounded-lg transition">🔄</button>
+                        <button onclick="fetchAllData()" class="bg-emerald-800/70 hover:bg-emerald-700/80 border border-emerald-400/30 text-white text-xs px-2.5 py-1.5 rounded-lg transition">🔄</button>
                     </div>
                 </div>
-                <div class="overflow-x-auto max-h-[360px]">
+
+                <!-- POWER GAUGE BAR PROGRESS SUBMIT JUMAT AKTIF -->
+                <div class="bg-gradient-to-r from-lime-400/15 via-emerald-400/15 to-teal-400/15 border border-lime-300/35 rounded-xl p-3.5 space-y-2 shadow-inner">
+                    <div class="flex flex-wrap justify-between items-center gap-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">⚡</span>
+                            <div>
+                                <span class="font-bold text-lime-200 uppercase tracking-wider text-[11px] block">Power Gauge Submit Jumat Aktif</span>
+                                <span id="powerGaugeCycleInfo" class="text-[10px] text-emerald-200/80">Siklus Jumat: - • Reset otomatis tiap Jumat</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span id="powerGaugePct" class="text-base font-extrabold bg-gradient-to-r from-lime-200 via-emerald-200 to-teal-200 bg-clip-text text-transparent">0%</span>
+                            <span id="powerGaugeCount" class="block text-[10px] font-semibold text-emerald-100">0 / 41 Toko</span>
+                        </div>
+                    </div>
+
+                    <!-- Segmented Power Bar -->
+                    <div class="w-full h-4 bg-emerald-950/90 rounded-full p-0.5 border border-lime-300/30 overflow-hidden relative">
+                        <div id="powerGaugeFill" class="h-full rounded-full bg-gradient-to-r from-lime-300 via-emerald-400 to-teal-300 power-stripes transition-all duration-500 ease-out" style="width: 0%"></div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-between items-center gap-2 text-[10px]">
+                        <span id="powerGaugeStatusText" class="text-emerald-200/85 font-medium">Menghitung progres toko...</span>
+                        <button type="button" onclick="toggleMissingStoresPanel()" class="text-lime-200 hover:text-white underline font-semibold transition">
+                            Lihat Toko Belum Submit (<span id="powerGaugeMissingCount">41</span>)
+                        </button>
+                    </div>
+
+                    <!-- Panel Daftar Toko Acuan yang Belum Submit pada Jumat Siklus Aktif -->
+                    <div id="missingStoresPanel" class="hidden pt-2 border-t border-emerald-400/20">
+                        <div id="missingStoresList" class="max-h-28 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-1 text-[10px] text-emerald-100/90 pr-1"></div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto max-h-[300px]">
                     <table class="w-full text-left text-xs border-collapse">
-                        <thead class="sticky top-0 bg-slate-900 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-700">
+                        <thead class="sticky top-0 bg-emerald-950 text-lime-200 uppercase text-[10px] tracking-wider border-b border-emerald-400/25">
                             <tr>
                                 <th class="p-2.5">Tanggal</th>
                                 <th class="p-2.5">Store</th>
@@ -312,8 +368,8 @@
                                 <th class="p-2.5 text-center">Aksi & Foto</th>
                             </tr>
                         </thead>
-                        <tbody id="rekapTableBody" class="divide-y divide-slate-700/50 text-slate-300">
-                            <tr><td colspan="4" class="p-6 text-center text-slate-500">Memuat data rekap...</td></tr>
+                        <tbody id="rekapTableBody" class="divide-y divide-emerald-400/15 text-emerald-50">
+                            <tr><td colspan="4" class="p-6 text-center text-emerald-200/70">Memuat data rekap...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -321,44 +377,117 @@
 
         </div>
 
+        <!-- === VIEW 3: MENU GALERI FOTO === -->
+        <div id="viewGaleri" class="hidden space-y-6">
+            <div class="bg-gradient-to-br from-emerald-900/45 via-teal-900/35 to-lime-900/25 backdrop-blur-md border border-emerald-400/35 rounded-2xl p-6 shadow-xl space-y-5">
+                <!-- Header & Kontrol Filter / Sort Galeri -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-emerald-400/25 pb-4">
+                    <div>
+                        <h3 class="text-base font-bold uppercase tracking-wider text-lime-200 flex items-center gap-2">
+                            <span>🖼️</span> Galeri Bukti Screenshot Demo Unit
+                        </h3>
+                        <p id="galleryCountInfo" class="text-xs text-emerald-200/75 mt-0.5">Menampilkan dokumentasi laporan submit</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                        <!-- Filter Bulan -->
+                        <div class="flex items-center gap-1.5 bg-emerald-950/90 border border-emerald-400/35 rounded-xl px-3 py-1.5">
+                            <span class="text-[11px] font-semibold text-lime-200/80">📅 Bulan:</span>
+                            <select id="filterGalleryMonth" onchange="renderGallery()" class="bg-transparent text-white text-xs font-medium focus:outline-none">
+                                <option value="all" class="bg-emerald-950">Semua Bulan</option>
+                                <option value="01" class="bg-emerald-950">Januari</option>
+                                <option value="02" class="bg-emerald-950">Februari</option>
+                                <option value="03" class="bg-emerald-950">Maret</option>
+                                <option value="04" class="bg-emerald-950">April</option>
+                                <option value="05" class="bg-emerald-950">Mei</option>
+                                <option value="06" class="bg-emerald-950">Juni</option>
+                                <option value="07" class="bg-emerald-950">Juli</option>
+                                <option value="08" class="bg-emerald-950">Agustus</option>
+                                <option value="09" class="bg-emerald-950">September</option>
+                                <option value="10" class="bg-emerald-950">Oktober</option>
+                                <option value="11" selected class="bg-emerald-950">November</option>
+                                <option value="12" class="bg-emerald-950">Desember</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort / Urutkan -->
+                        <div class="flex items-center gap-1.5 bg-emerald-950/90 border border-emerald-400/35 rounded-xl px-3 py-1.5">
+                            <span class="text-[11px] font-semibold text-lime-200/80">🔃 Urutkan:</span>
+                            <select id="sortGalleryOrder" onchange="renderGallery()" class="bg-transparent text-white text-xs font-medium focus:outline-none">
+                                <option value="newest" class="bg-emerald-950">Tanggal Terbaru</option>
+                                <option value="oldest" class="bg-emerald-950">Tanggal Terlama</option>
+                                <option value="store_asc" class="bg-emerald-950">Store (A - Z)</option>
+                                <option value="name_asc" class="bg-emerald-950">Nama PIC (A - Z)</option>
+                            </select>
+                        </div>
+
+                        <button onclick="fetchAllData()" class="bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 hover:from-lime-300 hover:to-teal-300 text-emerald-950 text-xs font-bold px-3.5 py-2 rounded-xl transition shadow">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid Kartu Galeri -->
+                <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    <div class="col-span-full text-center py-10 text-emerald-200/70 text-xs">Memuat galeri foto...</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- MODAL DETAIL TOKO -->
-    <div id="storeModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h3 id="modalTitle" class="font-bold text-white text-sm">Detail Toko</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+    <div id="storeModal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-gradient-to-b from-emerald-950 via-teal-950 to-slate-950 border border-emerald-400/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-emerald-400/25 pb-3">
+                <h3 id="modalTitle" class="font-bold text-lime-200 text-sm">Detail Toko</h3>
+                <button onclick="closeModal()" class="text-emerald-200 hover:text-white font-bold text-lg">✕</button>
             </div>
-            <div id="modalBody" class="space-y-3 text-xs text-slate-300"></div>
+            <div id="modalBody" class="space-y-3 text-xs text-emerald-50"></div>
             <div class="flex justify-end pt-2">
-                <button onclick="closeModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs font-semibold">Tutup</button>
+                <button onclick="closeModal()" class="bg-gradient-to-r from-lime-400 to-emerald-400 text-emerald-950 px-4 py-2 rounded-xl text-xs font-bold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LIGHTBOX FOTO GALERI -->
+    <div id="photoLightboxModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4" onclick="closePhotoLightbox(event)">
+        <div class="bg-gradient-to-b from-emerald-950 via-teal-950 to-slate-950 border border-emerald-400/40 rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center px-5 py-3.5 border-b border-emerald-400/25 bg-emerald-900/35">
+                <h3 id="lightboxTitle" class="font-bold text-lime-200 text-sm truncate">Detail Bukti Foto</h3>
+                <button onclick="closePhotoLightbox()" class="text-emerald-200 hover:text-white font-bold text-lg">✕</button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="bg-black/50 rounded-xl overflow-hidden flex items-center justify-center max-h-[60vh] border border-emerald-400/25">
+                    <img id="lightboxImg" src="" alt="Bukti Screenshot" class="max-h-[58vh] w-auto object-contain">
+                </div>
+                <div id="lightboxInfo" class="bg-emerald-950/60 border border-emerald-400/25 rounded-xl p-3.5 text-xs space-y-1.5 text-emerald-50"></div>
             </div>
         </div>
     </div>
 
     <!-- MODAL ADMIN RAHASIA (Terbuka via klik judul & PIN) -->
-    <div id="adminModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h3 class="font-bold text-emerald-400 text-sm flex items-center gap-2"><span>🔐</span> Panel Admin & Draft WA Reminder Jumat (Mulai tgl 20)</h3>
-                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+    <div id="adminModal" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-gradient-to-b from-emerald-950 via-teal-950 to-slate-950 border border-emerald-400/40 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-emerald-400/25 pb-3">
+                <h3 class="font-bold text-lime-200 text-sm flex items-center gap-2"><span>🔐</span> Panel Admin & Draft WA Reminder Jumat (Mulai tgl 20)</h3>
+                <button onclick="closeAdminModal()" class="text-emerald-200 hover:text-white font-bold text-lg">✕</button>
             </div>
             
             <!-- Form PIN -->
             <div id="adminPinContainer" class="space-y-3">
-                <p class="text-xs text-slate-300">Masukkan PIN Admin untuk mengakses generator pesan WA:</p>
+                <p class="text-xs text-emerald-100">Masukkan PIN Admin untuk mengakses generator pesan WA:</p>
                 <div class="flex gap-2">
-                    <input type="password" id="adminPinInput" placeholder="Masukkan PIN Admin..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                    <button onclick="verifyAdminPin()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-4 py-2 rounded-lg font-medium transition shadow whitespace-nowrap">Buka 🔓</button>
+                    <input type="password" id="adminPinInput" placeholder="Masukkan PIN Admin..." class="w-full bg-emerald-950 border border-emerald-400/35 text-white rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-lime-300 focus:outline-none">
+                    <button onclick="verifyAdminPin()" class="bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 hover:opacity-95 text-emerald-950 text-xs px-4 py-2 rounded-lg font-bold transition shadow whitespace-nowrap">Buka 🔓</button>
                 </div>
             </div>
 
             <!-- Konten Draft WA (Tampil setelah PIN benar) -->
             <div id="adminContentContainer" class="hidden space-y-3">
                 <div class="flex justify-between items-center">
-                    <span class="text-xs text-slate-400">Pilih Bulan Rekap:</span>
-                    <select id="filterAdminMonth" onchange="generateMonthlyWaTemplate()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <span class="text-xs text-emerald-200/80">Pilih Bulan Rekap:</span>
+                    <select id="filterAdminMonth" onchange="generateMonthlyWaTemplate()" class="bg-emerald-950 border border-emerald-400/35 text-white rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-lime-300 focus:outline-none">
                         <option value="all">Semua Bulan</option>
                         <option value="01">Januari</option>
                         <option value="02">Februari</option>
@@ -374,10 +503,10 @@
                         <option value="12">Desember</option>
                     </select>
                 </div>
-                <textarea id="waTemplateText" rows="7" class="w-full bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-none"></textarea>
+                <textarea id="waTemplateText" rows="7" class="w-full bg-emerald-950 border border-emerald-400/35 text-xs text-emerald-50 rounded-lg p-3 focus:ring-2 focus:ring-lime-300 focus:outline-none resize-none"></textarea>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button onclick="generateMonthlyWaTemplate()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">🔄 Refresh</button>
-                    <button onclick="copyWaTemplate()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">📋 Salin Pesan WA</button>
+                    <button onclick="generateMonthlyWaTemplate()" class="bg-emerald-800/80 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">🔄 Refresh</button>
+                    <button onclick="copyWaTemplate()" class="bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 text-emerald-950 px-4 py-2 rounded-xl text-xs font-bold transition">📋 Salin Pesan WA</button>
                 </div>
             </div>
         </div>
@@ -386,6 +515,50 @@
     <!-- Script Utama -->
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwbc9Bmz4Z69999E9ILcWgiLdcMQb1pbqFeVdHsTSv4Jxr30NIWc3N9O_bk2uF4M0QcRg/exec";
+
+        const REFERENCE_STORES = [
+            "M121 Digimap Tunjungan Plaza 3 Surabaya",
+            "M122 Digimap Galaxy Mall Surabaya",
+            "M123 Digimap Mall Bali Galeria",
+            "M126 Digimap Ciputra World Surabaya",
+            "M130 Digimap Sunset Road Bali",
+            "M134 Digimap Beachwalk Bali",
+            "M206 Digimap Pakuwon Mall Surabaya",
+            "M216 Digimap Tentrem Mall Semarang",
+            "M21B Digimap Ruko Blora",
+            "M21D Digimap Jig Laksana Mall",
+            "M220 Digimap Malioboro Mall",
+            "M223 Digimap Roxy Square Jember",
+            "M226 Digimap Ambon City Center",
+            "M229 Digimap Trans Icon Surabaya",
+            "M230 Digimap The Park Kendari",
+            "M231 Digimap Gress Mall Gresik",
+            "M232 Digimap Pakuwon Mall Solo",
+            "M233 Digimap Unimas District Sidoarjo",
+            "M236 Digimap Palu Grand Mall",
+            "M237 Digimap Solo Square",
+            "M239 Digimap Icon Mall Bali",
+            "M240 Digimap Pacific Mall Tegal",
+            "M244 Digimap Java Mall Semarang",
+            "M246 Digimap Malang Town Square",
+            "M248 Digimap Suncity Mall Sidoarjo",
+            "M250 Digimap Lippo Plaza Batu",
+            "M253 Digimap Plaza Surabaya",
+            "M258 Digimap Lippo Plaza Manado",
+            "M260 Digimap Kudus Extention Mall",
+            "M265 Digimap Merr Street",
+            "M268 Digimap Diana Mall Timika",
+            "M277 Digimap Citimall Tuban",
+            "M278 Digimap A.S.S Brebes",
+            "M281 Digimap Ngaliyan Street",
+            "M283 Digimap Basuki Rahmat Tulungagung",
+            "M285 Digimap Blitar Square",
+            "M288 Digimap Mojopahit Street Mojokerto",
+            "M289 Digimap Maleo Town Square",
+            "M293 Digimap Jend Sudirman Salatiga",
+            "M294 Digimap Bojonegoro Street",
+            "M297 Digimap Ponorogo City Center"
+        ];
 
         let MASTER_KARYAWAN = [];
         let GLOBAL_REPORTS = [];
@@ -399,14 +572,52 @@
             fetchAllData();
             setupEmployeeSearch();
             renderCalendar();
+            renderRekapTable();
         });
 
-        function getTodayLocalDateStr() {
-            const now = new Date();
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            const dd = String(now.getDate()).padStart(2, '0');
+        function formatDateLocal(dateObj) {
+            const yyyy = dateObj.getFullYear();
+            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getDate()).padStart(2, '0');
             return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function getTodayLocalDateStr() {
+            return formatDateLocal(new Date());
+        }
+
+        // Menentukan tanggal Jumat aktif sesuai kalender.
+        // Setiap masuk hari Jumat berikutnya, siklus berpindah ke Jumat tersebut sehingga gauge otomatis reset.
+        function getActiveFridayCycleDate(refDate = new Date()) {
+            const d = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate());
+            const day = d.getDay(); // 0=Min, 1=Sen, ..., 5=Jum, 6=Sab
+            const diffFromFriday = (day - 5 + 7) % 7; // 0 jika Jumat, 1 jika Sabtu, ..., 6 jika Kamis
+            d.setDate(d.getDate() - diffFromFriday);
+            return formatDateLocal(d);
+        }
+
+        function normalizeStoreKey(str) {
+            return String(str || "").trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+
+        function matchReferenceStore(rawStore) {
+            const norm = normalizeStoreKey(rawStore);
+            if (!norm || norm === "-") return null;
+
+            const exact = REFERENCE_STORES.find(ref => normalizeStoreKey(ref) === norm);
+            if (exact) return exact;
+
+            const codeMatch = norm.match(/^(m\d{2}[a-z0-9]*)\b/i);
+            if (codeMatch) {
+                const code = codeMatch[1].toLowerCase();
+                const byCode = REFERENCE_STORES.find(ref => normalizeStoreKey(ref).startsWith(code + " "));
+                if (byCode) return byCode;
+            }
+
+            return REFERENCE_STORES.find(ref => {
+                const refWithoutCode = normalizeStoreKey(ref).replace(/^m\d{2}[a-z0-9]*\s+/i, "");
+                return refWithoutCode && (norm.includes(refWithoutCode) || refWithoutCode.includes(norm));
+            }) || null;
         }
 
         function normalizeName(str) {
@@ -425,15 +636,21 @@
             return text.includes("kendala") || text.includes("rusak") || text.includes("mati") || text.includes("error") || text.includes("other") || text.includes("lainnya") || !text.startsWith("unit demo aman");
         }
 
+        function getDirectImageUrl(url) {
+            if (!url) return "";
+            const driveMatch = String(url).match(/(?:\/d\/|id=)([a-zA-Z0-9_-]{25,})/);
+            if (driveMatch && driveMatch[1]) {
+                return `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`;
+            }
+            return url;
+        }
+
         function getFridaysInMonth(year, monthIndex) {
             const fridays = [];
             const d = new Date(year, monthIndex, 1);
             while (d.getMonth() === monthIndex) {
                 if (d.getDay() === 5) {
-                    const yyyy = d.getFullYear();
-                    const mm = String(d.getMonth() + 1).padStart(2, '0');
-                    const dd = String(d.getDate()).padStart(2, '0');
-                    fridays.push(`${yyyy}-${mm}-${dd}`);
+                    fridays.push(formatDateLocal(d));
                 }
                 d.setDate(d.getDate() + 1);
             }
@@ -444,6 +661,11 @@
             const bar = document.getElementById("loadingBar");
             if (show) bar.classList.remove("hidden");
             else bar.classList.add("hidden");
+        }
+
+        function toggleMissingStoresPanel() {
+            const panel = document.getElementById("missingStoresPanel");
+            panel.classList.toggle("hidden");
         }
 
         // Trigger buka modal admin dari klik judul
@@ -487,7 +709,9 @@
             };
 
             const monthName = fullMonthNames[filterMonth] || "Bulan Ini";
-            const allStores = [...new Set(MASTER_KARYAWAN.map(e => e.store).filter(s => s && s !== "-"))].sort();
+            const allStores = REFERENCE_STORES.length > 0
+                ? [...REFERENCE_STORES]
+                : [...new Set(MASTER_KARYAWAN.map(e => e.store).filter(s => s && s !== "-"))].sort();
 
             const today = new Date();
             const year = today.getFullYear();
@@ -499,10 +723,7 @@
                 if (date.getDay() === 5) {
                     const dayNum = date.getDate();
                     if (dayNum >= 20 && date <= today) {
-                        const yyyy = date.getFullYear();
-                        const mm = String(date.getMonth() + 1).padStart(2, '0');
-                        const dd = String(dayNum).padStart(2, '0');
-                        fridayDates.push(`${yyyy}-${mm}-${dd}`);
+                        fridayDates.push(formatDateLocal(date));
                     }
                 }
                 date.setDate(date.getDate() + 1);
@@ -519,11 +740,12 @@
 
             let storeSubmittedDates = {};
             monthlyReports.forEach(r => {
-                if (r.storeLocation && r.date) {
-                    if (!storeSubmittedDates[r.storeLocation]) {
-                        storeSubmittedDates[r.storeLocation] = new Set();
+                const matched = matchReferenceStore(r.storeLocation) || r.storeLocation;
+                if (matched && r.date) {
+                    if (!storeSubmittedDates[matched]) {
+                        storeSubmittedDates[matched] = new Set();
                     }
-                    storeSubmittedDates[r.storeLocation].add(r.date);
+                    storeSubmittedDates[matched].add(r.date);
                 }
             });
 
@@ -576,23 +798,36 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
         function switchTab(tab) {
             const viewSubmit = document.getElementById("viewSubmit");
             const viewRekap = document.getElementById("viewRekap");
+            const viewGaleri = document.getElementById("viewGaleri");
+
             const btnSubmit = document.getElementById("tabSubmitBtn");
             const btnRekap = document.getElementById("tabRekapBtn");
+            const btnGaleri = document.getElementById("tabGaleriBtn");
+
+            const activeClass = "bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 text-emerald-950 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-emerald-500/25 transition";
+            const inactiveClass = "bg-emerald-900/50 text-emerald-100 hover:bg-emerald-800/60 border border-emerald-400/30 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
+
+            viewSubmit.classList.add("hidden");
+            viewRekap.classList.add("hidden");
+            viewGaleri.classList.add("hidden");
+
+            btnSubmit.className = inactiveClass;
+            btnRekap.className = inactiveClass;
+            btnGaleri.className = inactiveClass;
 
             if (tab === 'submit') {
                 viewSubmit.classList.remove("hidden");
-                viewRekap.classList.add("hidden");
-                btnSubmit.className = "bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
-                btnRekap.className = "bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
-            } else {
-                viewSubmit.classList.add("hidden");
-                viewRekap.classList.remove("grid", "lg:grid-cols-2");
+                btnSubmit.className = activeClass;
+            } else if (tab === 'rekap') {
                 viewRekap.classList.remove("hidden");
                 viewRekap.classList.add("grid", "lg:grid-cols-2");
-                btnRekap.className = "bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
-                btnSubmit.className = "bg-slate-700 text-slate-300 hover:bg-slate-600 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition";
+                btnRekap.className = activeClass;
                 renderCalendar();
                 renderRekapTable();
+            } else if (tab === 'galeri') {
+                viewGaleri.classList.remove("hidden");
+                btnGaleri.className = activeClass;
+                renderGallery();
             }
         }
 
@@ -607,13 +842,15 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                     checkSubmissionStatus();
                     renderStaffSummary();
                     renderCalendar();
-                    if(!document.getElementById("viewRekap").classList.contains("hidden")) {
-                        renderRekapTable();
+                    renderRekapTable();
+                    if(!document.getElementById("viewGaleri").classList.contains("hidden")) {
+                        renderGallery();
                     }
                 })
                 .catch(err => {
                     showLoading(false);
                     console.error("Gagal memuat data:", err);
+                    renderRekapTable();
                 });
         }
 
@@ -639,14 +876,14 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                 
                 if (matches.length > 0) {
                     listDiv.innerHTML = matches.map(emp => `
-                        <div class="p-3 hover:bg-purple-900/50 cursor-pointer border-b border-slate-700 text-xs text-white transition flex justify-between items-center" onclick="selectEmployeeName('${emp.nama.replace(/'/g, "\\'")}')">
-                            <div><b>${emp.nama}</b> <span class="text-slate-400">(${emp.store || 'Tanpa Store'})</span></div>
-                            <span class="text-[10px] bg-purple-600 text-white px-2 py-0.5 rounded">Pilih</span>
+                        <div class="p-3 hover:bg-emerald-800/60 cursor-pointer border-b border-emerald-400/20 text-xs text-white transition flex justify-between items-center" onclick="selectEmployeeName('${emp.nama.replace(/'/g, "\\'")}')">
+                            <div><b>${emp.nama}</b> <span class="text-lime-200/75">(${emp.store || 'Tanpa Store'})</span></div>
+                            <span class="text-[10px] bg-gradient-to-r from-lime-400 to-emerald-400 text-emerald-950 px-2 py-0.5 rounded font-bold">Pilih</span>
                         </div>
                     `).join("");
                     listDiv.classList.remove("hidden");
                 } else {
-                    listDiv.innerHTML = `<div class="p-3 text-xs text-slate-400">Nama tidak ditemukan di Master Karyawan</div>`;
+                    listDiv.innerHTML = `<div class="p-3 text-xs text-emerald-200/70">Nama tidak ditemukan di Master Karyawan</div>`;
                     listDiv.classList.remove("hidden");
                     clearProfileFields();
                     checkSubmissionStatus();
@@ -698,7 +935,7 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
             const todayStr = getTodayLocalDateStr();
 
             if (!cleanName) {
-                statusEl.innerHTML = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>`;
+                statusEl.innerHTML = `<span class="bg-amber-400/20 text-amber-200 border border-amber-300/40 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Pilih Karyawan Dulu</span>`;
                 fotoEl.innerText = "-";
                 hintEl.innerText = "";
                 return;
@@ -711,21 +948,21 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
             const todayReport = staffReports.find(r => r.date === todayStr);
 
             if (todayReport) {
-                statusEl.innerHTML = `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">✅ Sudah Submit Hari Ini</span>`;
+                statusEl.innerHTML = `<span class="bg-lime-400/20 text-lime-200 border border-lime-300/40 px-2.5 py-1 rounded-full text-xs font-semibold">✅ Sudah Submit Hari Ini</span>`;
                 hintEl.innerText = `Tanggal: ${todayStr}`;
                 if (todayReport.fileUrl) {
-                    fotoEl.innerHTML = `<a href="${todayReport.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">🖼️ Lihat Foto</a>`;
+                    fotoEl.innerHTML = `<a href="${todayReport.fileUrl}" target="_blank" class="text-lime-300 underline font-semibold">🖼️ Lihat Foto</a>`;
                 } else {
-                    fotoEl.innerHTML = `<span class="text-slate-400">Terdata (Tanpa Foto)</span>`;
+                    fotoEl.innerHTML = `<span class="text-emerald-200/70">Terdata (Tanpa Foto)</span>`;
                 }
             } else {
-                statusEl.innerHTML = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Belum Submit Hari Ini</span>`;
+                statusEl.innerHTML = `<span class="bg-amber-400/20 text-amber-200 border border-amber-300/40 px-2.5 py-1 rounded-full text-xs font-semibold">⚠️ Belum Submit Hari Ini</span>`;
                 if (staffReports.length > 0) {
                     const latest = staffReports[0];
                     hintEl.innerText = `Submit terakhir: ${latest.date || "-"}`;
                     fotoEl.innerHTML = latest.fileUrl
-                        ? `<a href="${latest.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">🖼️ Foto Terakhir (${latest.date})</a>`
-                        : `<span class="text-slate-400">Terakhir: ${latest.date || "-"}</span>`;
+                        ? `<a href="${latest.fileUrl}" target="_blank" class="text-lime-300 underline font-semibold">🖼️ Foto Terakhir (${latest.date})</a>`
+                        : `<span class="text-emerald-200/70">Terakhir: ${latest.date || "-"}</span>`;
                 } else {
                     hintEl.innerText = "Belum ada riwayat submit tercatat";
                     fotoEl.innerText = "-";
@@ -754,12 +991,12 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                 metricFridayPct.innerText = "0%";
                 metricFridayValue.innerText = "-";
                 metricFridayBar.style.width = "0%";
-                metricLastFridayBadge.innerHTML = `<span class="text-slate-400 font-medium">-</span>`;
+                metricLastFridayBadge.innerHTML = `<span class="text-emerald-200/70 font-medium">-</span>`;
                 metricLastFridayDate.innerText = "Pilih staff untuk melihat status";
                 metricMonthTotal.innerText = "0 Laporan";
                 metricIssueCount.innerText = "0 catatan kendala";
-                chipsContainer.innerHTML = `<span class="text-xs text-slate-500">Pilih staff untuk menampilkan checklist Jumat.</span>`;
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Silakan pilih staff terlebih dahulu.</td></tr>`;
+                chipsContainer.innerHTML = `<span class="text-xs text-emerald-200/70">Pilih staff untuk menampilkan checklist Jumat.</span>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-emerald-200/70">Silakan pilih staff terlebih dahulu.</td></tr>`;
                 return;
             }
 
@@ -783,7 +1020,7 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
             metricIssueCount.innerText = issueCount > 0
                 ? `⚠️ ${issueCount} catatan kendala`
                 : `✅ Semua unit normal`;
-            metricIssueCount.className = issueCount > 0 ? "text-[10px] text-amber-300 font-semibold" : "text-[10px] text-emerald-400";
+            metricIssueCount.className = issueCount > 0 ? "text-[10px] text-amber-300 font-semibold" : "text-[10px] text-lime-300";
 
             const now = new Date();
             const todayStr = getTodayLocalDateStr();
@@ -811,11 +1048,11 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                     const lastFri = pastOrTodayFridays[pastOrTodayFridays.length - 1];
                     const isLastDone = submittedDateSet.has(lastFri);
                     metricLastFridayBadge.innerHTML = isLastDone
-                        ? `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[11px] font-semibold">✅ Sudah Submit</span>`
-                        : `<span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full text-[11px] font-semibold">⚠️ Belum Submit</span>`;
+                        ? `<span class="bg-lime-400/20 text-lime-200 border border-lime-300/40 px-2 py-0.5 rounded-full text-[11px] font-semibold">✅ Sudah Submit</span>`
+                        : `<span class="bg-rose-500/20 text-rose-300 border border-rose-400/40 px-2 py-0.5 rounded-full text-[11px] font-semibold">⚠️ Belum Submit</span>`;
                     metricLastFridayDate.innerText = `Jadwal Jumat: ${lastFri}`;
                 } else {
-                    metricLastFridayBadge.innerHTML = `<span class="bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full text-[11px] font-semibold">⏳ Belum Terlewati</span>`;
+                    metricLastFridayBadge.innerHTML = `<span class="bg-emerald-900 text-emerald-100 px-2 py-0.5 rounded-full text-[11px] font-semibold">⏳ Belum Terlewati</span>`;
                     metricLastFridayDate.innerText = `Total Jumat bulan ini: ${fridays.length}`;
                 }
 
@@ -825,12 +1062,12 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                     const isPast = fDate <= todayStr;
 
                     if (isDone) {
-                        return `<button type="button" onclick="openDayDetail('${fDate}')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition">Tgl ${dayNum} ✅</button>`;
+                        return `<button type="button" onclick="openDayDetail('${fDate}')" class="bg-lime-400/20 hover:bg-lime-400/30 text-lime-200 border border-lime-300/40 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition">Tgl ${dayNum} ✅</button>`;
                     }
                     if (isPast) {
-                        return `<button type="button" onclick="openDayDetail('${fDate}')" class="bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/40 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition">Tgl ${dayNum} ⚠️</button>`;
+                        return `<button type="button" onclick="openDayDetail('${fDate}')" class="bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-400/40 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition">Tgl ${dayNum} ⚠️</button>`;
                     }
-                    return `<span class="bg-slate-800 text-slate-400 border border-slate-700 px-2.5 py-1 rounded-lg text-[11px]">Tgl ${dayNum} ⏳</span>`;
+                    return `<span class="bg-emerald-950/80 text-emerald-300/70 border border-emerald-400/20 px-2.5 py-1 rounded-lg text-[11px]">Tgl ${dayNum} ⏳</span>`;
                 }).join("");
             } else {
                 const allFridaysYtd = [];
@@ -850,16 +1087,16 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                     const lastFri = allFridaysYtd[allFridaysYtd.length - 1];
                     const isLastDone = submittedDateSet.has(lastFri);
                     metricLastFridayBadge.innerHTML = isLastDone
-                        ? `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[11px] font-semibold">✅ Sudah Submit</span>`
-                        : `<span class="bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full text-[11px] font-semibold">⚠️ Belum Submit</span>`;
+                        ? `<span class="bg-lime-400/20 text-lime-200 border border-lime-300/40 px-2 py-0.5 rounded-full text-[11px] font-semibold">✅ Sudah Submit</span>`
+                        : `<span class="bg-rose-500/20 text-rose-300 border border-rose-400/40 px-2 py-0.5 rounded-full text-[11px] font-semibold">⚠️ Belum Submit</span>`;
                     metricLastFridayDate.innerText = `Jumat terakhir: ${lastFri}`;
                 }
 
-                chipsContainer.innerHTML = `<span class="text-xs text-slate-400">Pilih bulan tertentu pada filter di atas untuk melihat rincian tanggal Jumat per bulan.</span>`;
+                chipsContainer.innerHTML = `<span class="text-xs text-emerald-200/75">Pilih bulan tertentu pada filter di atas untuk melihat rincian tanggal Jumat per bulan.</span>`;
             }
 
             if (staffReports.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Belum ada riwayat submit untuk periode ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-emerald-200/70">Belum ada riwayat submit untuk periode ini.</td></tr>`;
                 return;
             }
 
@@ -867,16 +1104,16 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                 const cleanNote = formatCleanNotes(r.notes);
                 const hasIssue = isIssueNote(r.notes);
                 const statusBadge = hasIssue
-                    ? `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full text-[10px] font-semibold">⚠️ Kendala</span>`
-                    : `<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[10px] font-semibold">Normal</span>`;
+                    ? `<span class="bg-amber-400/20 text-amber-200 border border-amber-300/40 px-2 py-0.5 rounded-full text-[10px] font-semibold">⚠️ Kendala</span>`
+                    : `<span class="bg-lime-400/20 text-lime-200 border border-lime-300/40 px-2 py-0.5 rounded-full text-[10px] font-semibold">Normal</span>`;
                 return `
-                    <tr class="hover:bg-slate-700/30 transition">
-                        <td class="p-3 text-slate-400">${r.date || '-'}</td>
+                    <tr class="hover:bg-emerald-800/30 transition">
+                        <td class="p-3 text-emerald-200/80">${r.date || '-'}</td>
                         <td class="p-3 font-semibold text-white">${r.storeLocation || '-'}</td>
                         <td class="p-3">${statusBadge}</td>
-                        <td class="p-3 text-slate-400">${cleanNote}</td>
+                        <td class="p-3 text-emerald-100/85">${cleanNote}</td>
                         <td class="p-3 text-center">
-                            ${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold text-xs">🖼️ Lihat Foto</a>` : '-'}
+                            ${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank" class="text-lime-300 underline font-semibold text-xs">🖼️ Lihat Foto</a>` : '-'}
                         </td>
                     </tr>
                 `;
@@ -958,14 +1195,14 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                     } else {
                         alert("Gagal dari Server: " + (response.message || "Unknown error"));
                     }
-                    btn.innerText = "Submit";
+                    btn.innerText = "Submit Laporan";
                     btn.disabled = false;
                 })
                 .catch(err => {
                     showLoading(false);
                     alert("Gagal terhubung ke server.");
                     console.error(err);
-                    btn.innerText = "Submit";
+                    btn.innerText = "Submit Laporan";
                     btn.disabled = false;
                 });
             };
@@ -1003,7 +1240,7 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
 
             let html = "";
             for (let i = 0; i < firstDayIndex; i++) {
-                html += `<div class="p-3 bg-slate-900/30 text-slate-700"></div>`;
+                html += `<div class="p-3 bg-emerald-950/35 text-emerald-800"></div>`;
             }
 
             for (let day = 1; day <= totalDays; day++) {
@@ -1014,22 +1251,22 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                 const isFriday = dayOfWeek === 5;
 
                 const isSubmitted = submittedDates.includes(dateStr);
-                const dotColor = isSubmitted ? "bg-emerald-500 shadow-emerald-500/50 shadow-sm" : "bg-rose-500/60";
+                const dotColor = isSubmitted ? "bg-lime-300 shadow-lime-300/60 shadow-sm" : "bg-rose-500/75";
                 
                 const reportsOnThisDay = GLOBAL_REPORTS.filter(r => r.date === dateStr);
-                const storeCount = [...new Set(reportsOnThisDay.map(r => r.storeLocation))].length;
+                const storeCount = [...new Set(reportsOnThisDay.map(r => matchReferenceStore(r.storeLocation) || r.storeLocation).filter(Boolean))].length;
 
-                const fridayCellClass = isFriday ? "bg-emerald-950/20 border-emerald-500/20" : "bg-slate-900 border-slate-800/80";
+                const fridayCellClass = isFriday ? "bg-lime-400/10 border-lime-300/30" : "bg-emerald-950/60 border-emerald-400/15";
 
                 html += `
-                    <div class="p-2.5 ${fridayCellClass} flex flex-col justify-between items-center h-20 hover:bg-slate-800/50 transition cursor-pointer" onclick="openDayDetail('${dateStr}')">
+                    <div class="p-2.5 ${fridayCellClass} flex flex-col justify-between items-center h-20 hover:bg-emerald-800/40 transition cursor-pointer" onclick="openDayDetail('${dateStr}')">
                         <div class="w-full flex justify-between items-center">
-                            <span class="font-bold text-slate-300 text-xs">${day}</span>
-                            ${isFriday ? `<span class="text-[8px] uppercase font-bold text-emerald-400 bg-emerald-500/10 px-1 rounded">Jum</span>` : ``}
+                            <span class="font-bold text-emerald-50 text-xs">${day}</span>
+                            ${isFriday ? `<span class="text-[8px] uppercase font-extrabold text-emerald-950 bg-lime-300 px-1.5 rounded">Jum</span>` : ``}
                         </div>
                         <div class="flex flex-col items-center gap-1">
                             <span class="w-2.5 h-2.5 rounded-full ${dotColor}"></span>
-                            ${storeCount > 0 ? `<span class="text-[9px] bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800">${storeCount} Toko</span>` : `<span class="text-[9px] text-slate-600">-</span>`}
+                            ${storeCount > 0 ? `<span class="text-[9px] bg-emerald-900/90 text-lime-200 px-1.5 py-0.5 rounded border border-lime-300/30">${storeCount} Toko</span>` : `<span class="text-[9px] text-emerald-400/50">-</span>`}
                         </div>
                     </div>
                 `;
@@ -1042,7 +1279,58 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
             renderCalendar();
         }
 
+        // === POWER GAUGE PROGRESS SUBMIT JUMAT AKTIF (OTOMATIS RESET TIAP JUMAT) ===
+        function updateFridayPowerGauge() {
+            const activeFridayStr = getActiveFridayCycleDate(new Date());
+            const totalReferenceCount = REFERENCE_STORES.length;
+
+            // Hitung submit pada tanggal Jumat siklus aktif (atau pada rentang Jumat s/d Kamis sebelum Jumat berikutnya jika submit dicatat di hari Jumat tersebut)
+            const fridayReports = GLOBAL_REPORTS.filter(r => r.date === activeFridayStr);
+
+            const submittedSet = new Set();
+            fridayReports.forEach(r => {
+                const matched = matchReferenceStore(r.storeLocation);
+                if (matched) {
+                    submittedSet.add(matched);
+                } else if (r.storeLocation && r.storeLocation.trim() !== "-") {
+                    submittedSet.add(r.storeLocation.trim());
+                }
+            });
+
+            const matchedRefCount = REFERENCE_STORES.filter(store => submittedSet.has(store)).length;
+            const pct = totalReferenceCount > 0 ? Math.min(100, Math.round((matchedRefCount / totalReferenceCount) * 100)) : 0;
+            const missingStores = REFERENCE_STORES.filter(store => !submittedSet.has(store));
+
+            document.getElementById("powerGaugeCycleInfo").innerText = `Siklus Jumat: ${activeFridayStr} • Reset otomatis tiap Jumat baru`;
+            document.getElementById("powerGaugePct").innerText = `${pct}%`;
+            document.getElementById("powerGaugeCount").innerText = `${matchedRefCount} / ${totalReferenceCount} Toko`;
+            document.getElementById("powerGaugeFill").style.width = `${pct}%`;
+            document.getElementById("powerGaugeMissingCount").innerText = `${missingStores.length}`;
+
+            const statusEl = document.getElementById("powerGaugeStatusText");
+            if (matchedRefCount === 0) {
+                statusEl.innerText = `Belum ada submit toko pada Jumat ${activeFridayStr} (Gauge siap terisi).`;
+            } else if (matchedRefCount === totalReferenceCount) {
+                statusEl.innerText = `100% Full Power! Seluruh ${totalReferenceCount} toko acuan sudah submit.`;
+            } else {
+                statusEl.innerText = `${matchedRefCount} toko sudah submit • ${missingStores.length} toko menunggu laporan.`;
+            }
+
+            const missingListEl = document.getElementById("missingStoresList");
+            if (missingStores.length === 0) {
+                missingListEl.innerHTML = `<div class="col-span-full text-lime-200 font-semibold">✅ Semua ${totalReferenceCount} toko acuan sudah melakukan submit pada siklus Jumat ini.</div>`;
+            } else {
+                missingListEl.innerHTML = missingStores.map((st, idx) => `
+                    <div class="bg-emerald-950/75 border border-emerald-400/20 rounded px-2 py-1 truncate" title="${st}">
+                        <span class="text-lime-300 font-semibold">${idx + 1}.</span> ${st}
+                    </div>
+                `).join("");
+            }
+        }
+
         function renderRekapTable() {
+            updateFridayPowerGauge();
+
             const tbody = document.getElementById("rekapTableBody");
             const filterMonth = document.getElementById("filterRekapMonth").value;
 
@@ -1057,34 +1345,175 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
             }
 
             if (!filteredReports || filteredReports.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Tidak ada data rekap untuk periode ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-emerald-200/70">Tidak ada data rekap untuk periode ini.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = filteredReports.map(rep => {
-                const store = rep.storeLocation || "-";
+                const store = matchReferenceStore(rep.storeLocation) || rep.storeLocation || "-";
                 const date = rep.date || "-";
                 const name = rep.reporterName || "-";
                 return `
-                    <tr class="hover:bg-slate-700/30 transition">
-                        <td class="p-2.5 text-slate-400">${date}</td>
-                        <td class="p-2.5 font-semibold text-white truncate max-w-[120px]" title="${store}">${store}</td>
-                        <td class="p-2.5 text-slate-300 truncate max-w-[100px]" title="${name}">${name}</td>
+                    <tr class="hover:bg-emerald-800/30 transition">
+                        <td class="p-2.5 text-emerald-200/80">${date}</td>
+                        <td class="p-2.5 font-semibold text-white truncate max-w-[130px]" title="${store}">${store}</td>
+                        <td class="p-2.5 text-emerald-50 truncate max-w-[100px]" title="${name}">${name}</td>
                         <td class="p-2.5 text-center flex items-center justify-center gap-1.5">
-                            <button onclick="openStoreDetail('${store}', '${date}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-medium transition shadow">🏪</button>
-                            ${rep.fileUrl ? `<a href="${rep.fileUrl}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-[10px] font-medium transition shadow">🖼️</a>` : ''}
+                            <button onclick="openStoreDetail('${store.replace(/'/g, "\\'")}', '${date}')" class="bg-gradient-to-r from-lime-400 to-emerald-400 hover:opacity-90 text-emerald-950 px-2 py-1 rounded text-[10px] font-bold transition shadow">🏪</button>
+                            ${rep.fileUrl ? `<a href="${rep.fileUrl}" target="_blank" class="bg-teal-500 hover:bg-teal-400 text-emerald-950 px-2 py-1 rounded text-[10px] font-bold transition shadow">🖼️</a>` : ''}
                         </td>
                     </tr>
                 `;
             }).join("");
         }
 
+        // === FUNGSI GALERI FOTO ===
+        function renderGallery() {
+            const grid = document.getElementById("galleryGrid");
+            const countInfo = document.getElementById("galleryCountInfo");
+            const filterMonth = document.getElementById("filterGalleryMonth").value;
+            const sortOrder = document.getElementById("sortGalleryOrder").value;
+
+            let items = [...GLOBAL_REPORTS];
+
+            if (filterMonth !== "all") {
+                items = items.filter(r => {
+                    if (!r.date) return false;
+                    const parts = String(r.date).split("-");
+                    return parts.length >= 2 && parts[1] === filterMonth;
+                });
+            }
+
+            items.sort((a, b) => {
+                if (sortOrder === "newest") {
+                    return String(b.date || "").localeCompare(String(a.date || ""));
+                } else if (sortOrder === "oldest") {
+                    return String(a.date || "").localeCompare(String(b.date || ""));
+                } else if (sortOrder === "store_asc") {
+                    return String(a.storeLocation || "").localeCompare(String(b.storeLocation || ""));
+                } else if (sortOrder === "name_asc") {
+                    return String(a.reporterName || "").localeCompare(String(b.reporterName || ""));
+                }
+                return 0;
+            });
+
+            countInfo.innerText = `Menampilkan ${items.length} dokumentasi laporan`;
+
+            if (items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-emerald-200/70 text-xs bg-emerald-950/40 rounded-xl border border-emerald-400/20">Tidak ada foto atau laporan submit untuk bulan yang dipilih.</div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map((item) => {
+                const store = matchReferenceStore(item.storeLocation) || item.storeLocation || "-";
+                const date = item.date || "-";
+                const pic = item.reporterName || "-";
+                const cleanNote = formatCleanNotes(item.notes);
+                const hasIssue = isIssueNote(item.notes);
+                const directImg = getDirectImageUrl(item.fileUrl);
+
+                const statusBadge = hasIssue
+                    ? `<span class="bg-amber-400/25 text-amber-200 border border-amber-300/40 px-2 py-0.5 rounded-full text-[10px] font-semibold">⚠️ Kendala</span>`
+                    : `<span class="bg-lime-400/25 text-lime-200 border border-lime-300/40 px-2 py-0.5 rounded-full text-[10px] font-semibold">✅ Normal</span>`;
+
+                const safeTitle = `${store} - ${date}`.replace(/'/g, "\\'");
+                const safePic = pic.replace(/'/g, "\\'");
+                const safeStore = store.replace(/'/g, "\\'");
+                const safeNote = cleanNote.replace(/'/g, "\\'");
+                const safeOrigUrl = (item.fileUrl || "").replace(/'/g, "\\'");
+                const safeDirectImg = directImg.replace(/'/g, "\\'");
+
+                return `
+                    <div class="bg-gradient-to-b from-emerald-900/45 via-teal-950/60 to-emerald-950/90 border border-emerald-400/30 rounded-2xl overflow-hidden shadow-lg hover:border-lime-300/70 transition flex flex-col justify-between group">
+                        <div>
+                            <!-- Preview Gambar -->
+                            <div class="relative h-44 bg-emerald-950/90 overflow-hidden flex items-center justify-center border-b border-emerald-400/20 cursor-pointer"
+                                 onclick="${item.fileUrl ? `openPhotoLightbox('${safeDirectImg}', '${safeOrigUrl}', '${safeTitle}', '${safePic}', '${safeStore}', '${date}', '${safeNote}')` : ''}">
+                                ${item.fileUrl ? `
+                                    <img src="${directImg}" alt="Bukti ${store}" loading="lazy"
+                                         onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                    <div class="hidden flex flex-col items-center justify-center text-emerald-200/75 p-4 text-center">
+                                        <span class="text-2xl mb-1">🖼️</span>
+                                        <span class="text-[11px]">Klik untuk buka tautan foto</span>
+                                    </div>
+                                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition flex items-end justify-center pb-3">
+                                        <span class="bg-gradient-to-r from-lime-400 to-emerald-400 text-emerald-950 text-[10px] font-bold px-3 py-1 rounded-full shadow">🔍 Perbesar Foto</span>
+                                    </div>
+                                ` : `
+                                    <div class="flex flex-col items-center justify-center text-emerald-400/60 p-4 text-center">
+                                        <span class="text-2xl mb-1">📷</span>
+                                        <span class="text-[11px]">Tidak ada lampiran foto</span>
+                                    </div>
+                                `}
+                                <div class="absolute top-2.5 left-2.5 bg-emerald-950/85 backdrop-blur-sm border border-emerald-400/35 text-lime-200 text-[10px] font-bold px-2.5 py-1 rounded-lg shadow">
+                                    📅 ${date}
+                                </div>
+                                <div class="absolute top-2.5 right-2.5">
+                                    ${statusBadge}
+                                </div>
+                            </div>
+
+                            <!-- Informasi Submit -->
+                            <div class="p-4 space-y-2 text-xs">
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-wider text-lime-200/75 font-bold block">Store / Cabang</span>
+                                    <h4 class="font-bold text-white text-sm truncate" title="${store}">🏪 ${store}</h4>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] bg-emerald-950/65 px-2.5 py-1.5 rounded-lg border border-emerald-400/20">
+                                    <span class="text-emerald-200/75">PIC Submit:</span>
+                                    <span class="font-semibold text-white truncate max-w-[140px]" title="${pic}">${pic}</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-wider text-lime-200/75 font-bold block mb-0.5">Catatan Laporan:</span>
+                                    <p class="text-[11px] text-emerald-100/90 line-clamp-2 bg-emerald-950/50 p-2 rounded-lg border border-emerald-400/15" title="${cleanNote}">${cleanNote}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Kartu -->
+                        <div class="px-4 pb-3.5 pt-1 flex justify-between items-center gap-2">
+                            ${item.fileUrl ? `
+                                <a href="${item.fileUrl}" target="_blank" class="w-full text-center bg-gradient-to-r from-lime-400 via-emerald-400 to-teal-400 hover:from-lime-300 hover:to-teal-300 text-emerald-950 text-[11px] font-bold py-1.5 rounded-lg transition shadow">
+                                    🔗 Buka File Asli
+                                </a>
+                            ` : `
+                                <span class="w-full text-center bg-emerald-950/60 text-emerald-400/70 text-[11px] py-1.5 rounded-lg border border-emerald-400/20">Tanpa Tautan</span>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function openPhotoLightbox(directImg, origUrl, title, pic, store, date, note) {
+            document.getElementById("lightboxTitle").innerText = `🖼️ ${title}`;
+            document.getElementById("lightboxImg").src = directImg || origUrl;
+            document.getElementById("lightboxInfo").innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div><span class="text-lime-200/75 block text-[10px] uppercase">Store</span><b class="text-white">${store}</b></div>
+                    <div><span class="text-lime-200/75 block text-[10px] uppercase">PIC Submit</span><b class="text-white">${pic}</b></div>
+                    <div><span class="text-lime-200/75 block text-[10px] uppercase">Tanggal Submit</span><b class="text-white">${date}</b></div>
+                </div>
+                <div class="pt-2 border-t border-emerald-400/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div><span class="text-lime-200/75 text-[10px] uppercase block">Catatan:</span><span>${note}</span></div>
+                    ${origUrl ? `<a href="${origUrl}" target="_blank" class="bg-gradient-to-r from-lime-400 to-emerald-400 text-emerald-950 px-3 py-1.5 rounded-lg text-[11px] font-bold whitespace-nowrap">Buka di Tab Baru ↗</a>` : ''}
+                </div>
+            `;
+            document.getElementById("photoLightboxModal").classList.remove("hidden");
+        }
+
+        function closePhotoLightbox() {
+            document.getElementById("photoLightboxModal").classList.add("hidden");
+            document.getElementById("lightboxImg").src = "";
+        }
+
         function openDayDetail(dateStr) {
             const reports = GLOBAL_REPORTS.filter(r => r.date === dateStr);
-            const stores = [...new Set(reports.map(r => r.storeLocation))];
+            const stores = [...new Set(reports.map(r => matchReferenceStore(r.storeLocation) || r.storeLocation).filter(Boolean))];
             
             document.getElementById("modalTitle").innerText = `📅 Aktivitas Submit Tanggal: ${dateStr}`;
-            let bodyHtml = `<p class="text-slate-400">Total Toko Submit: <b class="text-emerald-400">${stores.length} Toko</b></p>`;
+            let bodyHtml = `<p class="text-emerald-200/80">Total Toko Submit: <b class="text-lime-300">${stores.length} Toko</b></p>`;
             
             if (stores.length === 0) {
                 bodyHtml += `<p class="text-rose-400 mt-2">Tidak ada aktivitas submit pada tanggal ini.</p>`;
@@ -1092,13 +1521,14 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                 bodyHtml += `<div class="space-y-2 mt-3 max-h-60 overflow-y-auto">`;
                 reports.forEach(r => {
                     const cleanNote = formatCleanNotes(r.notes);
+                    const storeDisplay = matchReferenceStore(r.storeLocation) || r.storeLocation;
                     bodyHtml += `
-                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center text-xs">
+                        <div class="bg-emerald-950/90 p-2.5 rounded-xl border border-emerald-400/25 flex justify-between items-center text-xs">
                             <div>
-                                <b class="text-white">🏪 ${r.storeLocation}</b><br>
-                                <span class="text-slate-400">PIC: ${r.reporterName} (${cleanNote})</span>
+                                <b class="text-white">🏪 ${storeDisplay}</b><br>
+                                <span class="text-emerald-200/80">PIC: ${r.reporterName} (${cleanNote})</span>
                             </div>
-                            ${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">Lihat Foto</a>` : ''}
+                            ${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank" class="text-lime-300 underline font-semibold">Lihat Foto</a>` : ''}
                         </div>
                     `;
                 });
@@ -1109,18 +1539,22 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
         }
 
         function openStoreDetail(storeName, dateStr) {
-            const reports = GLOBAL_REPORTS.filter(r => r.storeLocation === storeName && (!dateStr || r.date === dateStr));
+            const targetKey = normalizeStoreKey(storeName);
+            const reports = GLOBAL_REPORTS.filter(r => {
+                const resolved = normalizeStoreKey(matchReferenceStore(r.storeLocation) || r.storeLocation);
+                return resolved === targetKey && (!dateStr || r.date === dateStr);
+            });
             document.getElementById("modalTitle").innerText = `🏪 Detail Store: ${storeName}`;
-            let bodyHtml = `<p class="text-slate-400">Riwayat Submit:</p><div class="space-y-2 mt-2 max-h-60 overflow-y-auto">`;
+            let bodyHtml = `<p class="text-emerald-200/80">Riwayat Submit:</p><div class="space-y-2 mt-2 max-h-60 overflow-y-auto">`;
             
             reports.forEach(r => {
                 const cleanNote = formatCleanNotes(r.notes);
                 bodyHtml += `
-                    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 space-y-1 text-xs">
+                    <div class="bg-emerald-950/90 p-3 rounded-xl border border-emerald-400/25 space-y-1 text-xs">
                         <div><b>Tanggal:</b> ${r.date}</div>
                         <div><b>PIC:</b> ${r.reporterName}</div>
                         <div><b>Catatan:</b> ${cleanNote}</div>
-                        ${r.fileUrl ? `<div><a href="${r.fileUrl}" target="_blank" class="text-blue-400 underline font-semibold">🖼️ Buka Bukti Screenshot Foto</a></div>` : ''}
+                        ${r.fileUrl ? `<div><a href="${r.fileUrl}" target="_blank" class="text-lime-300 underline font-semibold">🖼️ Buka Bukti Screenshot Foto</a></div>` : ''}
                     </div>
                 `;
             });
