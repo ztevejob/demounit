@@ -1130,8 +1130,23 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
         document.getElementById("submitForm").addEventListener("submit", function(e) {
             e.preventDefault();
             const namaKaryawan = document.getElementById("employeeSearch").value.trim();
-            if(!namaKaryawan) {
-                alert("Silakan ketik Nama Karyawan terlebih dahulu!");
+            if (!namaKaryawan) {
+                alert("Silakan ketik dan pilih Nama Karyawan terlebih dahulu!");
+                return;
+            }
+
+            if (MASTER_KARYAWAN.length === 0) {
+                alert("Data Master Karyawan belum selesai dimuat. Silakan tunggu sebentar atau muat ulang halaman.");
+                return;
+            }
+
+            const matchedEmployee = MASTER_KARYAWAN.find(
+                emp => emp.nama && normalizeName(emp.nama) === normalizeName(namaKaryawan)
+            );
+
+            if (!matchedEmployee) {
+                alert("Nama karyawan tidak sesuai atau tidak ditemukan di Master Karyawan. Silakan pilih nama yang valid dari daftar saran!");
+                document.getElementById("employeeSearch").focus();
                 return;
             }
 
