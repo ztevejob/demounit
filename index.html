@@ -333,6 +333,39 @@
                     <div id="missingStoresPanel" class="hidden pt-2 border-t border-emerald-200">
                         <div id="missingStoresList" class="max-h-28 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-1 text-[10px] text-emerald-900 pr-1"></div>
                     </div>
+
+                    <!-- Panel Draft WA Terintegrasi (Terbuka setelah PIN Admin 3333 diverifikasi) -->
+                    <div id="inlineAdminWaPanel" class="hidden pt-3 border-t border-emerald-300/80 space-y-2.5">
+                        <div class="flex flex-wrap justify-between items-center gap-2">
+                            <span class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                                <span>🔐</span> Draft WA Reminder Jumat (Admin)
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <select id="filterAdminMonth" onchange="generateMonthlyWaTemplate()" class="bg-white border border-emerald-300 text-emerald-950 rounded-lg px-2 py-1 text-[11px] font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="all">Semua Bulan</option>
+                                    <option value="01">Januari</option>
+                                    <option value="02">Februari</option>
+                                    <option value="03">Maret</option>
+                                    <option value="04">April</option>
+                                    <option value="05">Mei</option>
+                                    <option value="06">Juni</option>
+                                    <option value="07">Juli</option>
+                                    <option value="08">Agustus</option>
+                                    <option value="09">September</option>
+                                    <option value="10">Oktober</option>
+                                    <option value="11" selected>November</option>
+                                    <option value="12">Desember</option>
+                                </select>
+                                <button type="button" onclick="generateMonthlyWaTemplate()" class="bg-emerald-100 hover:bg-emerald-200 border border-emerald-300 text-emerald-900 px-2.5 py-1 rounded-lg text-[11px] font-semibold transition" title="Refresh Draft WA">🔄</button>
+                                <button type="button" onclick="closeInlineAdminWaPanel()" class="text-emerald-600 hover:text-emerald-950 px-1.5 py-0.5 text-xs font-bold" title="Sembunyikan Panel WA">✕</button>
+                            </div>
+                        </div>
+                        <textarea id="waTemplateText" rows="6" class="w-full bg-white/95 border border-emerald-300 text-[11px] text-emerald-950 rounded-xl p-2.5 focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-y leading-relaxed"></textarea>
+                        <div class="flex justify-between items-center gap-2">
+                            <span id="waActiveCycleHint" class="text-[10px] text-emerald-700 font-medium">Menghitung mulai Jumat siklus aktif...</span>
+                            <button type="button" onclick="copyWaTemplate()" class="bg-gradient-to-r from-emerald-600 via-teal-600 to-lime-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3.5 py-1.5 rounded-lg text-[11px] font-semibold transition shadow-sm">📋 Salin WA</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto max-h-[300px]">
@@ -443,47 +476,20 @@
         </div>
     </div>
 
-    <!-- MODAL ADMIN RAHASIA (Terbuka via klik judul & PIN) -->
+    <!-- MODAL PIN ADMIN RAHASIA (Terbuka via klik judul) -->
     <div id="adminModal" class="hidden fixed inset-0 bg-emerald-950/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white border border-emerald-200 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+        <div class="bg-white border border-emerald-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-emerald-200 pb-3">
-                <h3 class="font-bold text-emerald-900 text-sm flex items-center gap-2"><span>🔐</span> Panel Admin & Draft WA Reminder Jumat (Mulai tgl 20)</h3>
+                <h3 class="font-bold text-emerald-900 text-sm flex items-center gap-2"><span>🔐</span> Verifikasi Panel Admin</h3>
                 <button onclick="closeAdminModal()" class="text-emerald-600 hover:text-emerald-950 font-bold text-lg">✕</button>
             </div>
             
             <!-- Form PIN -->
             <div id="adminPinContainer" class="space-y-3">
-                <p class="text-xs text-emerald-800">Masukkan PIN Admin untuk mengakses generator pesan WA:</p>
+                <p class="text-xs text-emerald-800">Masukkan PIN Admin untuk membuka Draft WA Reminder Jumat di kartu Progres Submit Jumat:</p>
                 <div class="flex gap-2">
-                    <input type="password" id="adminPinInput" placeholder="Masukkan PIN Admin..." class="w-full bg-emerald-50 border border-emerald-300 text-emerald-950 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <input type="password" id="adminPinInput" onkeydown="if(event.key==='Enter') verifyAdminPin()" placeholder="Masukkan PIN Admin..." class="w-full bg-emerald-50 border border-emerald-300 text-emerald-950 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                     <button onclick="verifyAdminPin()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-95 text-white text-xs px-4 py-2 rounded-lg font-semibold transition shadow whitespace-nowrap">Buka 🔓</button>
-                </div>
-            </div>
-
-            <!-- Konten Draft WA (Tampil setelah PIN benar) -->
-            <div id="adminContentContainer" class="hidden space-y-3">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs text-emerald-700 font-medium">Pilih Bulan Rekap:</span>
-                    <select id="filterAdminMonth" onchange="generateMonthlyWaTemplate()" class="bg-emerald-50 border border-emerald-300 text-emerald-950 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                        <option value="all">Semua Bulan</option>
-                        <option value="01">Januari</option>
-                        <option value="02">Februari</option>
-                        <option value="03">Maret</option>
-                        <option value="04">April</option>
-                        <option value="05">Mei</option>
-                        <option value="06">Juni</option>
-                        <option value="07">Juli</option>
-                        <option value="08">Agustus</option>
-                        <option value="09">September</option>
-                        <option value="10">Oktober</option>
-                        <option value="11" selected>November</option>
-                        <option value="12">Desember</option>
-                    </select>
-                </div>
-                <textarea id="waTemplateText" rows="7" class="w-full bg-emerald-50 border border-emerald-300 text-xs text-emerald-950 rounded-lg p-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none resize-none"></textarea>
-                <div class="flex justify-end gap-2 pt-2">
-                    <button onclick="generateMonthlyWaTemplate()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-900 px-4 py-2 rounded-xl text-xs font-semibold transition">🔄 Refresh</button>
-                    <button onclick="copyWaTemplate()" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition">📋 Salin Pesan WA</button>
                 </div>
             </div>
         </div>
@@ -653,44 +659,59 @@
             panel.classList.toggle("hidden");
         }
 
-        // Trigger buka modal admin dari klik judul
+        // Trigger buka modal PIN admin dari klik judul
         function triggerAdminModal() {
-            document.getElementById("adminModal").classList.remove("hidden");
             if (isAdminUnlocked) {
-                document.getElementById("adminPinContainer").classList.add("hidden");
-                document.getElementById("adminContentContainer").classList.remove("hidden");
-                generateMonthlyWaTemplate();
-            } else {
-                document.getElementById("adminPinContainer").classList.remove("hidden");
-                document.getElementById("adminContentContainer").classList.add("hidden");
-                document.getElementById("adminPinInput").value = "";
+                openInlineAdminWaPanel();
+                return;
             }
+            document.getElementById("adminModal").classList.remove("hidden");
+            document.getElementById("adminPinContainer").classList.remove("hidden");
+            const pinInput = document.getElementById("adminPinInput");
+            pinInput.value = "";
+            setTimeout(() => pinInput.focus(), 50);
         }
 
         function closeAdminModal() {
             document.getElementById("adminModal").classList.add("hidden");
         }
 
+        function openInlineAdminWaPanel() {
+            switchTab('rekap');
+            const panel = document.getElementById("inlineAdminWaPanel");
+            panel.classList.remove("hidden");
+            const rekapMonth = document.getElementById("filterRekapMonth").value;
+            const adminMonthSelect = document.getElementById("filterAdminMonth");
+            if (adminMonthSelect && rekapMonth) {
+                adminMonthSelect.value = rekapMonth;
+            }
+            generateMonthlyWaTemplate();
+            panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        function closeInlineAdminWaPanel() {
+            document.getElementById("inlineAdminWaPanel").classList.add("hidden");
+        }
+
         function verifyAdminPin() {
             const pin = document.getElementById("adminPinInput").value.trim();
             if (pin === "3333") {
                 isAdminUnlocked = true;
-                document.getElementById("adminPinContainer").classList.add("hidden");
-                document.getElementById("adminContentContainer").classList.remove("hidden");
-                generateMonthlyWaTemplate();
+                closeAdminModal();
+                openInlineAdminWaPanel();
             } else {
                 alert("PIN Admin salah!");
                 document.getElementById("adminPinInput").value = "";
             }
         }
 
-        // Generator WA Khusus Hitung Hari Jumat Mulai Tanggal 20 ke Atas
+        // Generator WA Mulai Jumat Siklus Aktif (activeFridayStr) & Jumat Selanjutnya yang Berjalan
         function generateMonthlyWaTemplate() {
             const filterMonth = document.getElementById("filterAdminMonth").value;
             const fullMonthNames = {
                 "01": "Januari", "02": "Februari", "03": "Maret", "04": "April",
                 "05": "Mei", "06": "Juni", "07": "Juli", "08": "Agustus",
-                "09": "September", "10": "Oktober", "11": "November", "12": "Desember", "all": "Periode Ini"
+                "09": "September", "10": "Oktober", "11": "November", "12": "Desember", "all": "Periode Berjalan"
             };
 
             const monthName = fullMonthNames[filterMonth] || "Bulan Ini";
@@ -699,32 +720,46 @@
                 : [...new Set(MASTER_KARYAWAN.map(e => e.store).filter(s => s && s !== "-"))].sort();
 
             const today = new Date();
+            const todayStr = getTodayLocalDateStr();
+            const activeFridayStr = getActiveFridayCycleDate(today);
+            const readableActiveFriday = formatReadableDate(activeFridayStr);
             const year = today.getFullYear();
-            let targetMonthIndex = filterMonth === "all" ? today.getMonth() : parseInt(filterMonth) - 1;
-            
+
             let fridayDates = [];
-            let date = new Date(year, targetMonthIndex, 1);
-            while (date.getMonth() === targetMonthIndex) {
-                if (date.getDay() === 5) {
-                    const dayNum = date.getDate();
-                    if (dayNum >= 20 && date <= today) {
-                        fridayDates.push(formatDateLocal(date));
-                    }
+            if (filterMonth === "all") {
+                for (let m = 0; m <= today.getMonth(); m++) {
+                    getFridaysInMonth(year, m).forEach(fStr => {
+                        if (fStr >= activeFridayStr && fStr <= todayStr) {
+                            fridayDates.push(fStr);
+                        }
+                    });
                 }
-                date.setDate(date.getDate() + 1);
+            } else {
+                const targetMonthIndex = parseInt(filterMonth, 10) - 1;
+                getFridaysInMonth(year, targetMonthIndex).forEach(fStr => {
+                    if (fStr >= activeFridayStr && fStr <= todayStr) {
+                        fridayDates.push(fStr);
+                    }
+                });
             }
 
-            let monthlyReports = GLOBAL_REPORTS;
+            const cycleHintEl = document.getElementById("waActiveCycleHint");
+            if (cycleHintEl) {
+                cycleHintEl.innerText = fridayDates.length > 0
+                    ? `Siklus aktif: mulai ${readableActiveFriday} (${fridayDates.length} jadwal Jumat berjalan)`
+                    : `Siklus aktif: mulai ${readableActiveFriday} (belum ada jadwal di bulan terpilih)`;
+            }
+
+            let relevantReports = GLOBAL_REPORTS.filter(r => r.date && r.date >= activeFridayStr);
             if (filterMonth !== "all") {
-                monthlyReports = GLOBAL_REPORTS.filter(r => {
-                    if (!r.date) return false;
+                relevantReports = relevantReports.filter(r => {
                     const parts = String(r.date).split("-");
                     return parts.length >= 2 && parts[1] === filterMonth;
                 });
             }
 
             let storeSubmittedDates = {};
-            monthlyReports.forEach(r => {
+            relevantReports.forEach(r => {
                 const matched = matchReferenceStore(r.storeLocation) || r.storeLocation;
                 if (matched && r.date) {
                     if (!storeSubmittedDates[matched]) {
@@ -735,32 +770,36 @@
             });
 
             let storeUnsubmittedDetails = [];
-            allStores.forEach((store, index) => {
+            allStores.forEach((store) => {
                 const submittedSet = storeSubmittedDates[store] || new Set();
                 const missingFridays = fridayDates.filter(fDate => !submittedSet.has(fDate));
 
                 if (missingFridays.length > 0) {
-                    const missingDaysStr = missingFridays.map(f => f.split("-")[2]).join(", tgl ");
-                    storeUnsubmittedDetails.push(`${index + 1}. ${store} - Belum laporan pada tgl ${missingDaysStr}`);
+                    const missingDatesStr = missingFridays.map(f => formatReadableDate(f)).join(", ");
+                    storeUnsubmittedDetails.push(`${storeUnsubmittedDetails.length + 1}. ${store} - Belum laporan (${missingDatesStr})`);
                 }
             });
 
             let storeListText = "";
             if (fridayDates.length === 0) {
-                storeListText = "ℹ️ Belum ada jadwal hari Jumat mulai tanggal 20 ke atas yang terlewati pada periode ini.";
+                storeListText = `ℹ️ Belum ada jadwal hari Jumat mulai siklus aktif (${readableActiveFriday}) pada periode *${monthName}*.`;
             } else if (storeUnsubmittedDetails.length === 0) {
-                storeListText = "✅ Semua store sudah lengkap melakukan laporan di setiap hari Jumat (mulai tgl 20) yang telah berjalan pada periode ini.";
+                storeListText = `✅ Semua store sudah lengkap melakukan laporan mulai Jumat ${readableActiveFriday} pada periode *${monthName}*.`;
             } else {
                 storeListText = storeUnsubmittedDetails.join("\n");
             }
 
+            const periodLabel = filterMonth === "all"
+                ? `mulai Jumat ${readableActiveFriday}`
+                : `periode *${monthName}* (mulai Jumat ${readableActiveFriday})`;
+
             const template = `Halo Rekan-Rekan Store Digimap 👋,
 
-Mengingatkan untuk pengisian laporan wajib Demo Unit Digimap setiap hari Jumat periode *${monthName}* (Mulai perhitungan tanggal 20). Berdasarkan monitoring portal, berikut daftar store beserta tanggal Jumat yang belum tercatat laporannya:
+Mengingatkan untuk pengisian laporan wajib Demo Unit Digimap setiap hari Jumat ${periodLabel}. Berdasarkan monitoring portal, berikut daftar store yang belum tercatat laporannya:
 
 ${storeListText}
 
-Mohon segera koordinasikan PIC Store masing-masing untuk melengkapi laporan demo unit pada tanggal tersebut.
+Mohon segera koordinasikan PIC Store masing-masing untuk melengkapi laporan demo unit tersebut.
 
 Terima kasih atas kerjasamanya! Semangat 🔥.`;
 
@@ -828,6 +867,9 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                     renderStaffSummary();
                     renderCalendar();
                     renderRekapTable();
+                    if (isAdminUnlocked) {
+                        generateMonthlyWaTemplate();
+                    }
                     if(!document.getElementById("viewGaleri").classList.contains("hidden")) {
                         renderGallery();
                     }
