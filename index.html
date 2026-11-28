@@ -328,6 +328,7 @@
                             Toko Belum Submit (<span id="fridayProgressMissingCount">41</span>)
                         </button>
                     </div>
+                    <div id="fridayBreakdownPills" class="flex flex-wrap items-center gap-1.5 text-[10px]"></div>
 
                     <!-- Panel Daftar Toko Acuan yang Belum Submit pada Jumat Siklus Aktif -->
                     <div id="missingStoresPanel" class="hidden pt-2 border-t border-emerald-200">
@@ -577,7 +578,7 @@
             return formatDateLocal(new Date());
         }
 
-        // Menentukan tanggal Jumat aktif sesuai kalender.
+        // Menentukan tanggal Jumat aktif sesuai kalender (siklus berlaku Jumat s.d. Kamis berikutnya).
         // Saat memasuki Jumat berikutnya, tanggal siklus berpindah dan progres otomatis reset.
         function getActiveFridayCycleDate(refDate = new Date()) {
             const d = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate());
@@ -585,6 +586,33 @@
             const diffFromFriday = (day - 5 + 7) % 7;
             d.setDate(d.getDate() - diffFromFriday);
             return formatDateLocal(d);
+        }
+
+        function getNextFridayCycleDate(activeFridayStr) {
+            const [y, m, d] = activeFridayStr.split("-").map(Number);
+            const nextFri = new Date(y, m - 1, d + 7);
+            return formatDateLocal(nextFri);
+        }
+
+        function getFridayCycleEndDate(activeFridayStr) {
+            const [y, m, d] = activeFridayStr.split("-").map(Number);
+            const endThu = new Date(y, m - 1, d + 6);
+            return formatDateLocal(endThu);
+        }
+
+        function getDelayDaysFromFriday(dateStr) {
+            if (!dateStr || !dateStr.includes("-")) return 0;
+            const [y, m, d] = dateStr.split("-").map(Number);
+            const dateObj = new Date(y, m - 1, d);
+            const day = dateObj.getDay();
+            return (day - 5 + 7) % 7; // 0 = Jumat (On-Time), 1..6 = Sab..Kam (Susulan)
+        }
+
+        function isLateSubmissionReport(report) {
+            if (!report) return false;
+            const noteUpper = String(report.notes || "").toUpperCase();
+            if (noteUpper.includes("[SUSULAN") || noteUpper.includes("TERLAMBAT")) return true;
+            return getDelayDaysFromFriday(report.date) > 0;
         }
 
         function normalizeStoreKey(str) {
@@ -758,25 +786,46 @@
                 });
             }
 
-            let storeSubmittedDates = {};
+            // Map per store -> siklus Jumat aktif -> { onTime: boolean, lateDates: [] }
+            let storeCycleStatus = {};
             relevantReports.forEach(r => {
                 const matched = matchReferenceStore(r.storeLocation) || r.storeLocation;
                 if (matched && r.date) {
-                    if (!storeSubmittedDates[matched]) {
-                        storeSubmittedDates[matched] = new Set();
+                    const [ry, rm, rd] = r.date.split("-").map(Number);
+                    const cycleFri = getActiveFridayCycleDate(new Date(ry, rm - 1, rd));
+                    if (!storeCycleStatus[matched]) storeCycleStatus[matched] = {};
+                    if (!storeCycleStatus[matched][cycleFri]) {
+                        storeCycleStatus[matched][cycleFri] = { onTime: false, lateDates: [] };
                     }
-                    storeSubmittedDates[matched].add(r.date);
+                    if (r.date === cycleFri && !isLateSubmissionReport(r)) {
+                        storeCycleStatus[matched][cycleFri].onTime = true;
+                    } else {
+                        storeCycleStatus[matched][cycleFri].lateDates.push(r.date);
+                    }
                 }
             });
 
             let storeUnsubmittedDetails = [];
+            let storeLateDetails = [];
             allStores.forEach((store) => {
-                const submittedSet = storeSubmittedDates[store] || new Set();
-                const missingFridays = fridayDates.filter(fDate => !submittedSet.has(fDate));
+                const cycles = storeCycleStatus[store] || {};
+                const missingFridays = [];
+                const lateNotes = [];
+
+                fridayDates.forEach(fDate => {
+                    const info = cycles[fDate];
+                    if (!info) {
+                        missingFridays.push(formatReadableDate(fDate));
+                    } else if (!info.onTime && info.lateDates.length > 0) {
+                        lateNotes.push(`${formatReadableDate(fDate)} (susulan tgl ${formatReadableDate(info.lateDates[0])})`);
+                    }
+                });
 
                 if (missingFridays.length > 0) {
-                    const missingDatesStr = missingFridays.map(f => formatReadableDate(f)).join(", ");
-                    storeUnsubmittedDetails.push(`${storeUnsubmittedDetails.length + 1}. ${store} - Belum laporan (${missingDatesStr})`);
+                    storeUnsubmittedDetails.push(`${storeUnsubmittedDetails.length + 1}. ${store} - Belum laporan (${missingFridays.join(", ")})`);
+                }
+                if (lateNotes.length > 0) {
+                    storeLateDetails.push(`${storeLateDetails.length + 1}. ${store} - Terlambat/Susulan: ${lateNotes.join(", ")}`);
                 }
             });
 
@@ -787,6 +836,10 @@
                 storeListText = `✅ Semua store sudah lengkap melakukan laporan mulai Jumat ${readableActiveFriday} pada periode *${monthName}*.`;
             } else {
                 storeListText = storeUnsubmittedDetails.join("\n");
+            }
+
+            if (storeLateDetails.length > 0) {
+                storeListText += `\n\n⏰ *Catatan Submit Susulan (Terlambat):*\n${storeLateDetails.join("\n")}`;
             }
 
             const periodLabel = filterMonth === "all"
@@ -1192,9 +1245,23 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                 return;
             }
 
+            const selectedSubmitDate = document.getElementById("submitDate").value;
+            const delayDays = getDelayDaysFromFriday(selectedSubmitDate);
+            const activeCycleFri = selectedSubmitDate ? getActiveFridayCycleDate(new Date(selectedSubmitDate + "T00:00:00")) : "";
+
+            if (delayDays > 0) {
+                const confirmLate = confirm(
+                    `Perhatian: Tanggal ${formatReadableDate(selectedSubmitDate)} bukan hari Jumat (+${delayDays} hari dari Jumat ${formatReadableDate(activeCycleFri)}).\n\nLaporan tetap masuk ke progres siklus Jumat ${formatReadableDate(activeCycleFri)} dengan catatan [SUSULAN / TERLAMBAT +${delayDays} Hari]. Lanjutkan submit?`
+                );
+                if (!confirmLate) return;
+            }
+
             const selectNotes = document.getElementById("notesSelect").value;
             const otherNotes = document.getElementById("notesOtherInput").value.trim();
-            const finalNotes = selectNotes === "OTHER" ? (otherNotes || "Lainnya") : selectNotes;
+            const baseNotes = selectNotes === "OTHER" ? (otherNotes || "Lainnya") : selectNotes;
+            const finalNotes = delayDays > 0
+                ? `[SUSULAN / TERLAMBAT +${delayDays} Hari • Siklus Jumat ${formatReadableDate(activeCycleFri)}] ${baseNotes}`
+                : baseNotes;
 
             const fileInput = document.getElementById("photoFile");
             const file = fileInput.files[0];
@@ -1321,29 +1388,46 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
             renderCalendar();
         }
 
-        // === PROGRES SUBMIT JUMAT (OTOMATIS RESET TIAP JUMAT) ===
+        // === PROGRES SUBMIT JUMAT (SIKLUS JUMAT S.D. KAMIS BERIKUTNYA, OTOMATIS RESET TIAP JUMAT) ===
         function updateFridayProgressBar() {
             const activeFridayStr = getActiveFridayCycleDate(new Date());
+            const nextFridayStr = getNextFridayCycleDate(activeFridayStr);
+            const cycleEndThuStr = getFridayCycleEndDate(activeFridayStr);
             const readableFriday = formatReadableDate(activeFridayStr);
+            const readableEndThu = formatReadableDate(cycleEndThuStr);
             const totalReferenceCount = REFERENCE_STORES.length;
 
-            const fridayReports = GLOBAL_REPORTS.filter(r => r.date === activeFridayStr);
+            const cycleReports = GLOBAL_REPORTS.filter(r => r.date && r.date >= activeFridayStr && r.date < nextFridayStr);
 
-            const submittedSet = new Set();
-            fridayReports.forEach(r => {
-                const matched = matchReferenceStore(r.storeLocation);
-                if (matched) {
-                    submittedSet.add(matched);
-                } else if (r.storeLocation && r.storeLocation.trim() !== "-") {
-                    submittedSet.add(r.storeLocation.trim());
+            // Catat status per toko: "ontime" menang jika sudah pernah submit tepat waktu di hari Jumat
+            const storeStatusMap = {};
+            cycleReports.forEach(r => {
+                const matched = matchReferenceStore(r.storeLocation) || (r.storeLocation && r.storeLocation.trim() !== "-" ? r.storeLocation.trim() : null);
+                if (!matched) return;
+                const isLate = isLateSubmissionReport(r);
+                const delay = getDelayDaysFromFriday(r.date);
+                if (!storeStatusMap[matched]) {
+                    storeStatusMap[matched] = {
+                        status: isLate ? "late" : "ontime",
+                        date: r.date,
+                        delayDays: delay
+                    };
+                } else if (!isLate) {
+                    storeStatusMap[matched] = {
+                        status: "ontime",
+                        date: r.date,
+                        delayDays: 0
+                    };
                 }
             });
 
-            const matchedRefCount = REFERENCE_STORES.filter(store => submittedSet.has(store)).length;
+            const onTimeStores = REFERENCE_STORES.filter(store => storeStatusMap[store]?.status === "ontime");
+            const lateStores = REFERENCE_STORES.filter(store => storeStatusMap[store]?.status === "late");
+            const matchedRefCount = onTimeStores.length + lateStores.length;
             const pct = totalReferenceCount > 0 ? Math.min(100, Math.round((matchedRefCount / totalReferenceCount) * 100)) : 0;
-            const missingStores = REFERENCE_STORES.filter(store => !submittedSet.has(store));
+            const missingStores = REFERENCE_STORES.filter(store => !storeStatusMap[store]);
 
-            document.getElementById("fridayProgressCycleInfo").innerText = `Siklus Jumat ${readableFriday} • Reset otomatis tiap Jumat`;
+            document.getElementById("fridayProgressCycleInfo").innerText = `Siklus Jumat ${readableFriday} (s.d. ${readableEndThu}) • Reset tiap Jumat`;
             document.getElementById("fridayProgressPct").innerText = `${pct}%`;
             document.getElementById("fridayProgressCount").innerText = `${matchedRefCount} / ${totalReferenceCount} Toko`;
             document.getElementById("fridayProgressFill").style.width = `${pct}%`;
@@ -1351,22 +1435,48 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
 
             const statusEl = document.getElementById("fridayProgressStatusText");
             if (matchedRefCount === 0) {
-                statusEl.innerText = `Belum ada submit toko pada Jumat ${readableFriday}.`;
+                statusEl.innerText = `Belum ada submit toko pada siklus Jumat ${readableFriday}.`;
             } else if (matchedRefCount === totalReferenceCount) {
-                statusEl.innerText = `Lengkap! Seluruh ${totalReferenceCount} toko acuan sudah submit.`;
+                statusEl.innerText = lateStores.length > 0
+                    ? `Lengkap ${totalReferenceCount} toko (${onTimeStores.length} On-Time, ${lateStores.length} Susulan).`
+                    : `Lengkap! Seluruh ${totalReferenceCount} toko submit tepat waktu.`;
             } else {
-                statusEl.innerText = `${matchedRefCount} toko sudah submit • ${missingStores.length} toko belum tercatat.`;
+                statusEl.innerText = `${onTimeStores.length} On-Time • ${lateStores.length} Susulan • ${missingStores.length} Belum.`;
+            }
+
+            const pillsEl = document.getElementById("fridayBreakdownPills");
+            if (pillsEl) {
+                pillsEl.innerHTML = `
+                    <span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-full font-semibold">✅ On-Time: ${onTimeStores.length}</span>
+                    <span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full font-semibold">⏰ Susulan (Terlambat): ${lateStores.length}</span>
+                    <span class="bg-rose-100 text-rose-700 border border-rose-300 px-2 py-0.5 rounded-full font-semibold">⚠️ Belum: ${missingStores.length}</span>
+                `;
             }
 
             const missingListEl = document.getElementById("missingStoresList");
-            if (missingStores.length === 0) {
-                missingListEl.innerHTML = `<div class="col-span-full text-emerald-800 font-semibold">✅ Semua ${totalReferenceCount} toko acuan sudah melakukan submit pada siklus Jumat ini.</div>`;
+            if (missingStores.length === 0 && lateStores.length === 0) {
+                missingListEl.innerHTML = `<div class="col-span-full text-emerald-800 font-semibold">✅ Semua ${totalReferenceCount} toko acuan sudah submit tepat waktu pada siklus Jumat ini.</div>`;
             } else {
-                missingListEl.innerHTML = missingStores.map((st, idx) => `
-                    <div class="bg-white border border-emerald-200 rounded px-2 py-1 truncate" title="${st}">
-                        <span class="text-emerald-700 font-bold">${idx + 1}.</span> ${st}
-                    </div>
-                `).join("");
+                let htmlList = "";
+                if (missingStores.length > 0) {
+                    htmlList += missingStores.map((st, idx) => `
+                        <div class="bg-white border border-rose-200 rounded px-2 py-1 truncate" title="${st}">
+                            <span class="text-rose-700 font-bold">${idx + 1}.</span> ${st}
+                        </div>
+                    `).join("");
+                }
+                if (lateStores.length > 0) {
+                    htmlList += `<div class="col-span-full text-[10px] font-bold text-amber-800 pt-1.5 mt-1 border-t border-emerald-200">⏰ Masuk Progres dengan Catatan Susulan (${lateStores.length} Toko):</div>`;
+                    htmlList += lateStores.map((st, idx) => {
+                        const info = storeStatusMap[st];
+                        return `
+                            <div class="bg-amber-50/90 border border-amber-300 rounded px-2 py-1 truncate text-amber-950" title="${st} (${info.date})">
+                                <span class="text-amber-700 font-bold">${idx + 1}.</span> ${st} <span class="text-[9px] font-semibold text-amber-700">(+${info.delayDays}h • ${formatReadableDate(info.date)})</span>
+                            </div>
+                        `;
+                    }).join("");
+                }
+                missingListEl.innerHTML = htmlList;
             }
         }
 
@@ -1395,9 +1505,14 @@ Terima kasih atas kerjasamanya! Semangat 🔥.`;
                 const store = matchReferenceStore(rep.storeLocation) || rep.storeLocation || "-";
                 const date = rep.date || "-";
                 const name = rep.reporterName || "-";
+                const isLate = isLateSubmissionReport(rep);
+                const delay = getDelayDaysFromFriday(date);
+                const timeBadge = isLate
+                    ? `<span class="inline-block bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.2 rounded text-[9px] font-semibold ml-1" title="Submit Susulan (+${delay} hari)">⏰ Susulan</span>`
+                    : `<span class="inline-block bg-emerald-100 text-emerald-800 border border-emerald-300 px-1.5 py-0.2 rounded text-[9px] font-semibold ml-1">✅ Jumat</span>`;
                 return `
                     <tr class="hover:bg-emerald-50/80 transition">
-                        <td class="p-2.5 text-emerald-700">${date}</td>
+                        <td class="p-2.5 text-emerald-700 whitespace-nowrap">${date}${timeBadge}</td>
                         <td class="p-2.5 font-semibold text-emerald-950 truncate max-w-[130px]" title="${store}">${store}</td>
                         <td class="p-2.5 text-emerald-800 truncate max-w-[100px]" title="${name}">${name}</td>
                         <td class="p-2.5 text-center flex items-center justify-center gap-1.5">
